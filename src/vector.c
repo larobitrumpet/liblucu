@@ -146,7 +146,9 @@ bool vector_map_func(void* data, void* params) {
 
 LUCU_VECTOR vector_map(LUCU_VECTOR* vector, size_t target_bytewidth, void* (*map_func)(void*, void*), void* params) {
 	LUCU_VECTOR new_vector = construct_vector(target_bytewidth);
-	void* pars[] = {(void*)&new_vector, (void*)map_func, params};
+	LUCU_GENERIC_FUNCTION mf;
+	mf.f = (void (*)(void))map_func;
+	void* pars[] = {(void*)&new_vector, (void*)&mf, params};
 	vector_iterate(vector, vector_map_func, (void*)pars);
 	return new_vector;
 }
@@ -162,7 +164,7 @@ bool vector_min_max_func(void* data, void* params) {
 }
 
 void* vector_min_max(LUCU_VECTOR* vector, bool (*compare_func)(void*, void*, void*), void* params) {
-	void* min_max = vector->v + vector->head * vector->bytewidth;
+	void* min_max = (void*)((uintptr_t)vector->v + vector->head * vector->bytewidth);
 	LUCU_GENERIC_FUNCTION cf;
 	cf.f = (void (*)(void))compare_func;
 	void* pars[] = {(void*)&cf, (void*)&min_max, params};
