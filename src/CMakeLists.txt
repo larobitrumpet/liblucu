@@ -2,4 +2,4 @@ include_directories(../include/)
 
 file(GLOB SRC_FILES *.c)
 
-add_library(liblucu STATIC ${SRC_FILES})
+add_library(lucu STATIC ${SRC_FILES})
