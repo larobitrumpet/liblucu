@@ -5,8 +5,8 @@ static inline int mod(int a, int b) {
 	return ((a % b) + b) % b;
 }
 
-LUCU_VECTOR construct_vector(size_t bytewidth) {
-	LUCU_VECTOR vector;
+LucuVector construct_vector(size_t bytewidth) {
+	LucuVector vector;
 	vector.bytewidth = bytewidth;
 	vector.size = LUCU_VECTOR_INIT_SIZE;
 	vector.v = malloc(vector.bytewidth * (size_t)vector.size);
@@ -17,15 +17,15 @@ LUCU_VECTOR construct_vector(size_t bytewidth) {
 
 bool deconstruct_vector_func(void* data, void* params) {
 	void** pars = (void**)params;
-	void (*free_function)(void*, void*) = (void (*)(void*, void*))((LUCU_GENERIC_FUNCTION*)pars[0])->f;
+	void (*free_function)(void*, void*) = (void (*)(void*, void*))((LucuGenericFunction*)pars[0])->f;
 	void* par = pars[1];
 	free_function(data, par);
 	return false;
 }
 
-void deconstruct_vector(LUCU_VECTOR* vector, void (*free_function)(void*, void*), void* params) {
+void deconstruct_vector(LucuVector* vector, void (*free_function)(void*, void*), void* params) {
 	if (free_function != NULL) {
-		LUCU_GENERIC_FUNCTION ff;
+		LucuGenericFunction ff;
 		ff.f = (void (*)(void))free_function;
 		void* pars[] = {(void*)&ff, params};
 		vector_iterate(vector, deconstruct_vector_func, pars);
@@ -33,15 +33,15 @@ void deconstruct_vector(LUCU_VECTOR* vector, void (*free_function)(void*, void*)
 	free(vector->v);
 }
 
-bool vector_is_empty(LUCU_VECTOR* vector) {
+bool vector_is_empty(LucuVector* vector) {
 	return vector->head == vector->tail;
 }
 
-int vector_length(LUCU_VECTOR* vector) {
+int vector_length(LucuVector* vector) {
 	return mod(vector->tail - vector->head, vector->size);
 }
 
-void vector_increase_size(LUCU_VECTOR* vector) {
+void vector_increase_size(LucuVector* vector) {
 	int old_size = vector->size;
 	vector->size = (int)(old_size * LUCU_VECTOR_SIZE_INCREASE);
 	void* new_q = malloc(vector->bytewidth * (size_t)vector->size);
@@ -58,14 +58,14 @@ void vector_increase_size(LUCU_VECTOR* vector) {
 	vector->tail = j;
 }
 
-void vector_enqueue(LUCU_VECTOR* vector, void* data) {
+void vector_enqueue(LucuVector* vector, void* data) {
 	if (vector->head == mod(vector->tail + 1, vector->size))
 		vector_increase_size(vector);
 	memcpy((void*)((uintptr_t)vector->v + (uintptr_t)vector->tail * vector->bytewidth), data, vector->bytewidth);
 	vector->tail = mod(vector->tail + 1, vector->size);
 }
 
-int vector_dequeue(LUCU_VECTOR* vector, void* data) {
+int vector_dequeue(LucuVector* vector, void* data) {
 	if (vector_is_empty(vector)) {
 		return 1;
 	}
@@ -74,7 +74,7 @@ int vector_dequeue(LUCU_VECTOR* vector, void* data) {
 	return 0;
 }
 
-int vector_index(LUCU_VECTOR* vector, void* data, bool (*equal)(void*, void*)) {
+int vector_index(LucuVector* vector, void* data, bool (*equal)(void*, void*)) {
 	int index = 0;
 	int i = vector->head;
 	while (i != vector->tail) {
@@ -87,15 +87,15 @@ int vector_index(LUCU_VECTOR* vector, void* data, bool (*equal)(void*, void*)) {
 	return -1;
 }
 
-int vector_local_index_to_global_index(LUCU_VECTOR* vector, int index) {
+int vector_local_index_to_global_index(LucuVector* vector, int index) {
 	return mod(vector->head + index, vector->size);
 }
 
-void vector_get(LUCU_VECTOR* vector, int index, void* data) {
+void vector_get(LucuVector* vector, int index, void* data) {
 	memcpy(data, (void*)((uintptr_t)vector->v + (size_t)vector_local_index_to_global_index(vector, index) * vector->bytewidth), vector->bytewidth);
 }
 
-void vector_remove(LUCU_VECTOR* vector, int index) {
+void vector_remove(LucuVector* vector, int index) {
 	if (index >= vector_length(vector) || index < 0)
 		return;
 	int i = vector_local_index_to_global_index(vector, index);
@@ -106,7 +106,7 @@ void vector_remove(LUCU_VECTOR* vector, int index) {
 	vector->tail = mod(vector->tail - 1, vector->size);
 }
 
-void vector_iterate(LUCU_VECTOR* vector, bool (*func)(void*, void*), void* params) {
+void vector_iterate(LucuVector* vector, bool (*func)(void*, void*), void* params) {
 	int i = vector->head;
 	while (i != vector->tail) {
 		if (func((void*)((uintptr_t)vector->v + (size_t)i * vector->bytewidth), params))
@@ -117,8 +117,8 @@ void vector_iterate(LUCU_VECTOR* vector, bool (*func)(void*, void*), void* param
 
 bool vector_filter_func(void* data, void* params) {
 	void** pars = (void**)params;
-	LUCU_VECTOR* vector = (LUCU_VECTOR*)pars[0];
-	bool (*filter_func)(void*, void*) = (bool (*)(void*, void*))((LUCU_GENERIC_FUNCTION*)pars[1])->f;
+	LucuVector* vector = (LucuVector*)pars[0];
+	bool (*filter_func)(void*, void*) = (bool (*)(void*, void*))((LucuGenericFunction*)pars[1])->f;
 	void* par = pars[2];
 	if (filter_func(data, par)) {
 		vector_enqueue(vector, data);
@@ -126,9 +126,9 @@ bool vector_filter_func(void* data, void* params) {
 	return false;
 }
 
-LUCU_VECTOR vector_filter(LUCU_VECTOR* vector, bool (*filter_func)(void*, void*), void* params) {
-	LUCU_VECTOR new_vector = construct_vector(vector->bytewidth);
-	LUCU_GENERIC_FUNCTION ff;
+LucuVector vector_filter(LucuVector* vector, bool (*filter_func)(void*, void*), void* params) {
+	LucuVector new_vector = construct_vector(vector->bytewidth);
+	LucuGenericFunction ff;
 	ff.f = (void (*)(void))filter_func;
 	void* pars[] = {(void*)&new_vector, (void*)&ff, params};
 	vector_iterate(vector, vector_filter_func, (void*)pars);
@@ -137,16 +137,16 @@ LUCU_VECTOR vector_filter(LUCU_VECTOR* vector, bool (*filter_func)(void*, void*)
 
 bool vector_map_func(void* data, void* params) {
 	void** pars = (void**)params;
-	LUCU_VECTOR* vector = (LUCU_VECTOR*)pars[0];
-	void* (*map_func)(void*, void*) = (void* (*)(void*, void*))((LUCU_GENERIC_FUNCTION*)pars[1])->f;
+	LucuVector* vector = (LucuVector*)pars[0];
+	void* (*map_func)(void*, void*) = (void* (*)(void*, void*))((LucuGenericFunction*)pars[1])->f;
 	void* par = pars[2];
 	vector_enqueue(vector, map_func(data, par));
 	return false;
 }
 
-LUCU_VECTOR vector_map(LUCU_VECTOR* vector, size_t target_bytewidth, void* (*map_func)(void*, void*), void* params) {
-	LUCU_VECTOR new_vector = construct_vector(target_bytewidth);
-	LUCU_GENERIC_FUNCTION mf;
+LucuVector vector_map(LucuVector* vector, size_t target_bytewidth, void* (*map_func)(void*, void*), void* params) {
+	LucuVector new_vector = construct_vector(target_bytewidth);
+	LucuGenericFunction mf;
 	mf.f = (void (*)(void))map_func;
 	void* pars[] = {(void*)&new_vector, (void*)&mf, params};
 	vector_iterate(vector, vector_map_func, (void*)pars);
@@ -155,7 +155,7 @@ LUCU_VECTOR vector_map(LUCU_VECTOR* vector, size_t target_bytewidth, void* (*map
 
 bool vector_min_max_func(void* data, void* params) {
 	void** pars = (void**)params;
-	bool (*compare_func)(void*, void*, void*) = (bool (*)(void*, void*, void*))((LUCU_GENERIC_FUNCTION*)pars[0])->f;
+	bool (*compare_func)(void*, void*, void*) = (bool (*)(void*, void*, void*))((LucuGenericFunction*)pars[0])->f;
 	void** min_max = (void**)pars[1];
 	void* par = pars[2];
 	if (compare_func(data, *min_max, par))
@@ -163,9 +163,9 @@ bool vector_min_max_func(void* data, void* params) {
 	return false;
 }
 
-void* vector_min_max(LUCU_VECTOR* vector, bool (*compare_func)(void*, void*, void*), void* params) {
+void* vector_min_max(LucuVector* vector, bool (*compare_func)(void*, void*, void*), void* params) {
 	void* min_max = (void*)((uintptr_t)vector->v + (size_t)vector->head * vector->bytewidth);
-	LUCU_GENERIC_FUNCTION cf;
+	LucuGenericFunction cf;
 	cf.f = (void (*)(void))compare_func;
 	void* pars[] = {(void*)&cf, (void*)&min_max, params};
 	vector_iterate(vector, vector_min_max_func, (void*)pars);
