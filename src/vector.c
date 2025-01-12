@@ -1,4 +1,4 @@
-#include "liblucu.h"
+#include "../include/liblucu.h"
 #include <stdint.h>
 
 static inline int mod(int a, int b) {
@@ -9,7 +9,7 @@ LUCU_VECTOR construct_vector(size_t bytewidth) {
 	LUCU_VECTOR vector;
 	vector.bytewidth = bytewidth;
 	vector.size = LUCU_VECTOR_INIT_SIZE;
-	vector.v = malloc(vector.bytewidth * vector.size);
+	vector.v = malloc(vector.bytewidth * (size_t)vector.size);
 	vector.head = 0;
 	vector.tail = 0;
 	return vector;
@@ -44,11 +44,11 @@ int vector_length(LUCU_VECTOR* vector) {
 void vector_increase_size(LUCU_VECTOR* vector) {
 	int old_size = vector->size;
 	vector->size = (int)(old_size * LUCU_VECTOR_SIZE_INCREASE);
-	void* new_q = malloc(vector->bytewidth * vector->size);
+	void* new_q = malloc(vector->bytewidth * (size_t)vector->size);
 	int i = vector->head;
 	int j = 0;
 	while (i != vector->tail) {
-		memcpy((void*)((uintptr_t)new_q + j * vector->bytewidth), (void*)((uintptr_t)vector->v + i * vector->bytewidth), vector->bytewidth);
+		memcpy((void*)((uintptr_t)new_q + (size_t)j * vector->bytewidth), (void*)((uintptr_t)vector->v + (size_t)i * vector->bytewidth), vector->bytewidth);
 		i = mod(i + 1, old_size);
 		j++;
 	}
@@ -69,7 +69,7 @@ int vector_dequeue(LUCU_VECTOR* vector, void* data) {
 	if (vector_is_empty(vector)) {
 		return 1;
 	}
-	memcpy(data, (void*)((uintptr_t)vector->v + vector->head * vector->bytewidth), vector->bytewidth);
+	memcpy(data, (void*)((uintptr_t)vector->v + (size_t)vector->head * vector->bytewidth), vector->bytewidth);
 	vector->head = mod(vector->head + 1, vector->size);
 	return 0;
 }
@@ -78,7 +78,7 @@ int vector_index(LUCU_VECTOR* vector, void* data, bool (*equal)(void*, void*)) {
 	int index = 0;
 	int i = vector->head;
 	while (i != vector->tail) {
-		if (equal((void*)((uintptr_t)vector->v + i * vector->bytewidth), data)) {
+		if (equal((void*)((uintptr_t)vector->v + (size_t)i * vector->bytewidth), data)) {
 			return index;
 		}
 		i = mod(i + 1, vector->size);
@@ -92,7 +92,7 @@ int vector_local_index_to_global_index(LUCU_VECTOR* vector, int index) {
 }
 
 void vector_get(LUCU_VECTOR* vector, int index, void* data) {
-	memcpy(data, (void*)((uintptr_t)vector->v + vector_local_index_to_global_index(vector, index) * vector->bytewidth), vector->bytewidth);
+	memcpy(data, (void*)((uintptr_t)vector->v + (size_t)vector_local_index_to_global_index(vector, index) * vector->bytewidth), vector->bytewidth);
 }
 
 void vector_remove(LUCU_VECTOR* vector, int index) {
@@ -100,7 +100,7 @@ void vector_remove(LUCU_VECTOR* vector, int index) {
 		return;
 	int i = vector_local_index_to_global_index(vector, index);
 	while (i != vector->tail) {
-		memcpy((void*)((uintptr_t)vector->v + i * vector->bytewidth), (void*)((uintptr_t)vector->v + mod(i + 1, vector->size) * vector->bytewidth), vector->bytewidth);
+		memcpy((void*)((uintptr_t)vector->v + (size_t)i * vector->bytewidth), (void*)((uintptr_t)vector->v + (size_t)mod(i + 1, vector->size) * vector->bytewidth), vector->bytewidth);
 		i = mod(i + 1, vector->size);
 	}
 	vector->tail = mod(vector->tail - 1, vector->size);
@@ -109,7 +109,7 @@ void vector_remove(LUCU_VECTOR* vector, int index) {
 void vector_iterate(LUCU_VECTOR* vector, bool (*func)(void*, void*), void* params) {
 	int i = vector->head;
 	while (i != vector->tail) {
-		if (func((void*)((uintptr_t)vector->v + i * vector->bytewidth), params))
+		if (func((void*)((uintptr_t)vector->v + (size_t)i * vector->bytewidth), params))
 			break;
 		i = mod(i + 1, vector->size);
 	}
@@ -164,7 +164,7 @@ bool vector_min_max_func(void* data, void* params) {
 }
 
 void* vector_min_max(LUCU_VECTOR* vector, bool (*compare_func)(void*, void*, void*), void* params) {
-	void* min_max = (void*)((uintptr_t)vector->v + vector->head * vector->bytewidth);
+	void* min_max = (void*)((uintptr_t)vector->v + (size_t)vector->head * vector->bytewidth);
 	LUCU_GENERIC_FUNCTION cf;
 	cf.f = (void (*)(void))compare_func;
 	void* pars[] = {(void*)&cf, (void*)&min_max, params};
