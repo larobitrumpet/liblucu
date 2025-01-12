@@ -1,4 +1,4 @@
-#include "../include/liblucu.h"
+#include "vector.h"
 #include <stdint.h>
 
 static inline int mod(int a, int b) {

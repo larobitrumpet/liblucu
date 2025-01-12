@@ -1,6 +1,7 @@
 #ifndef LUCU_VECTOR_H
 #define LUCU_VECTOR_H
 
+#include "lucu.h"
 #include <stdlib.h>
 #include <stdint.h>
 #include <stdbool.h>
