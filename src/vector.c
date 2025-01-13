@@ -106,8 +106,8 @@ static int lucu_vector_local_index_to_global_index(LucuVector* vector, int index
 	return mod(vector->head + index, vector->size);
 }
 
-void lucu_vector_get(LucuVector* vector, int index, void* data) {
-	memcpy(data, (void*)((uintptr_t)vector->v + (size_t)lucu_vector_local_index_to_global_index(vector, index) * vector->bytewidth), vector->bytewidth);
+void* lucu_vector_get(LucuVector* vector, int index) {
+	return (void*)((uintptr_t)vector->v + (size_t)lucu_vector_local_index_to_global_index(vector, index) * vector->bytewidth);
 }
 
 void lucu_vector_remove(LucuVector* vector, int index) {

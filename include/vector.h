@@ -123,7 +123,16 @@ void* lucu_vector_pop_front(LucuVector* vector);
  */
 int lucu_vector_index(LucuVector* vector, void* data, bool (*equal)(void*, void*, void*), void* params);
 
-void lucu_vector_get(LucuVector* vector, int index, void* data);
+/**
+ * Gets a pointer to the element at `index` of a `LucuVector`
+ *
+ * @param vector 'LucuVector' to get the element from.
+ * @param index Index of element.
+ * @return Pointer to the element at `index`.
+ * @pre `index` **must** be a valid index within the bounds of `vector`. Otherwise will give a pointer to junk data.
+ */
+void* lucu_vector_get(LucuVector* vector, int index);
+
 void lucu_vector_iterate(LucuVector* vector, bool (*func)(void*, void*), void* params);
 LucuVector lucu_vector_filter(LucuVector* vector, bool (*filter_function)(void*, void*), void* params);
 LucuVector lucu_vector_map(LucuVector* vector, size_t target_bytewidth, void* (*map_function)(void*, void*), void* params);
