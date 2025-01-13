@@ -111,9 +111,11 @@ void* lucu_vector_get(LucuVector* vector, int index) {
 }
 
 void lucu_vector_remove(LucuVector* vector, int index) {
-	if (index >= lucu_vector_length(vector) || index < 0)
-		return;
+	assert(index < lucu_vector_length(vector) && index >= 0);
 	int i = lucu_vector_local_index_to_global_index(vector, index);
+	if (vector->free_function != NULL) {
+		vector->free_function((void*)((uintptr_t)vector->v + (size_t)i * vector->bytewidth));
+	}
 	while (i != vector->tail) {
 		memcpy((void*)((uintptr_t)vector->v + (size_t)i * vector->bytewidth), (void*)((uintptr_t)vector->v + (size_t)mod(i + 1, vector->size) * vector->bytewidth), vector->bytewidth);
 		i = mod(i + 1, vector->size);

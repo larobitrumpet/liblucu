@@ -7,6 +7,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <string.h>
+#include <assert.h>
 
 /**
  * Initial size of the vector.
@@ -132,6 +133,15 @@ int lucu_vector_index(LucuVector* vector, void* data, bool (*equal)(void*, void*
  * @pre `index` **must** be a valid index within the bounds of `vector`. Otherwise will give a pointer to junk data.
  */
 void* lucu_vector_get(LucuVector* vector, int index);
+
+/**
+ * Remove an element from a `LucuVector`
+ *
+ * @param vector `LucuVector` to remove element from.
+ * @param index Index of the element to remove.
+ * @pre `index` **must** be a valid index within the bounds of `vector`.
+ */
+void lucu_vector_remove(LucuVector* vector, int index);
 
 void lucu_vector_iterate(LucuVector* vector, bool (*func)(void*, void*), void* params);
 LucuVector lucu_vector_filter(LucuVector* vector, bool (*filter_function)(void*, void*), void* params);
