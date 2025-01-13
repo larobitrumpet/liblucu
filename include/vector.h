@@ -89,17 +89,25 @@ bool lucu_vector_is_empty(LucuVector* vector);
 int lucu_vector_length(LucuVector* vector);
 
 /**
- * Enqueue an element to the beginning of a `LucuVector`.
+ * Push an element to the front of a `LucuVector`.
  *
- * Copies the data pointed to by `data` to the beginning of `vector`.
  * @param vector The `LucuVector` to append data to.
  * @param data Pointer to data to copy into `vector`.
  * @pre `data` is not `NULL` and points to valid data
  * the size of the `bytewidth` used to create `vector`.
  */
-void lucu_vector_enqueue(LucuVector* vector, void* data);
+void lucu_vector_push_front(LucuVector* vector, void* data);
 
-int lucu_vector_dequeue(LucuVector* vector);
+/**
+ * Pop an element from the front of a `LucuVector`.
+ *
+ * @param vector The `LucuVector` to pop from.
+ * @return Pointer to the element that was at the front of `vector`.
+ * This data will have to be freed by the user.
+ * Is `NULL` if `vector` is empty.
+ */
+void* lucu_vector_pop_front(LucuVector* vector);
+
 int lucu_vector_index(LucuVector* vector, void* data, bool (*equal)(void*, void*));
 void lucu_vector_get(LucuVector* vector, int index, void* data);
 void lucu_vector_iterate(LucuVector* vector, bool (*func)(void*, void*), void* params);

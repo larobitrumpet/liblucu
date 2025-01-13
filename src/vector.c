@@ -1,5 +1,4 @@
 #include "../include/vector.h"
-#include <stdint.h>
 
 static inline int mod(int a, int b) {
 	return ((a % b) + b) % b;
@@ -56,20 +55,25 @@ static void lucu_vector_increase_size(LucuVector* vector) {
 	vector->tail = j;
 }
 
-void lucu_vector_enqueue(LucuVector* vector, void* data) {
-	if (vector->head == mod(vector->tail + 1, vector->size))
+void lucu_vector_push_front(LucuVector* vector, void* data) {
+	if (vector->head == mod(vector->tail + 1, vector->size)) {
 		lucu_vector_increase_size(vector);
+	}
 	memcpy((void*)((uintptr_t)vector->v + (uintptr_t)vector->tail * vector->bytewidth), data, vector->bytewidth);
 	vector->tail = mod(vector->tail + 1, vector->size);
 }
 
-int lucu_vector_dequeue(LucuVector* vector, void* data) {
+void* lucu_vector_pop_front(LucuVector* vector) {
 	if (lucu_vector_is_empty(vector)) {
-		return 1;
+		return NULL;
 	}
+	void* data = malloc(vector->bytewidth);
 	memcpy(data, (void*)((uintptr_t)vector->v + (size_t)vector->head * vector->bytewidth), vector->bytewidth);
+	if (vector->free_function != NULL) {
+		vector->free_function((void*)((uintptr_t)vector->v + (size_t)vector->head * vector->bytewidth));
+	}
 	vector->head = mod(vector->head + 1, vector->size);
-	return 0;
+	return data;
 }
 
 int lucu_vector_index(LucuVector* vector, void* data, bool (*equal)(void*, void*)) {
