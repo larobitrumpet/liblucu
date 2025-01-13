@@ -125,7 +125,7 @@ void* lucu_vector_pop_front(LucuVector* vector);
 int lucu_vector_index(LucuVector* vector, void* data, bool (*equal)(void*, void*, void*), void* params);
 
 /**
- * Gets a pointer to the element at `index` of a `LucuVector`
+ * Gets a pointer to the element at `index` of a `LucuVector`.
  *
  * @param vector 'LucuVector' to get the element from.
  * @param index Index of element.
@@ -135,7 +135,7 @@ int lucu_vector_index(LucuVector* vector, void* data, bool (*equal)(void*, void*
 void* lucu_vector_get(LucuVector* vector, int index);
 
 /**
- * Remove an element from a `LucuVector`
+ * Remove an element from a `LucuVector`.
  *
  * @param vector `LucuVector` to remove element from.
  * @param index Index of the element to remove.
@@ -143,7 +143,16 @@ void* lucu_vector_get(LucuVector* vector, int index);
  */
 void lucu_vector_remove(LucuVector* vector, int index);
 
+/**
+ * Iterate over elements of a `LucuVector`.
+ *
+ * @param vector 'LucuVector' to iterate over.
+ * @param func Function to apply to each element. Accepts a pointer
+ * to the element and `params`. Returns `true` if iteration should stop
+ * and `false` if iteration should continue.
+ */
 void lucu_vector_iterate(LucuVector* vector, bool (*func)(void*, void*), void* params);
+
 LucuVector lucu_vector_filter(LucuVector* vector, bool (*filter_function)(void*, void*), void* params);
 LucuVector lucu_vector_map(LucuVector* vector, size_t target_bytewidth, void* (*map_function)(void*, void*), void* params);
 void* lucu_vector_min_max(LucuVector* vector, bool (*compare_function)(void*, void*, void*), void* params);
