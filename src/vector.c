@@ -22,12 +22,11 @@ static bool lucu_deconstruct_vector_func(void* data, void* params) {
 	return false;
 }
 
-void lucu_deconstruct_vector(LucuVector* vector, void (*free_function)(void*, void*), void* params) {
-	if (free_function != NULL) {
+void lucu_deconstruct_vector(LucuVector* vector) {
+	if (vector->free_function != NULL) {
 		LucuGenericFunction ff;
-		ff.f = (void (*)(void))free_function;
-		void* pars[] = {(void*)&ff, params};
-		lucu_vector_iterate(vector, lucu_deconstruct_vector_func, pars);
+		ff.f = (void (*)(void))vector->free_function;
+		lucu_vector_iterate(vector, lucu_deconstruct_vector_func, (void*)&ff);
 	}
 	free(vector->v);
 }
