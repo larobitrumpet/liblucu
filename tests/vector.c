@@ -19,14 +19,14 @@ Test(vector, push_back) {
 	cr_assert(lucu_vector_is_empty(&v) == true);
 	cr_assert(lucu_vector_length(&v) == 0);
 
-	int first = 1;
+	const int first = 1;
 	lucu_vector_push_back(&v, &first);
 	cr_assert(lucu_vector_is_empty(&v) == false);
 	cr_assert(lucu_vector_length(&v) == 1);
 	cr_assert(*(int*)lucu_vector_get(&v, 0) == 1);
 	cr_expect((int*)lucu_vector_get(&v, 0) != &first);
 
-	int second = 2;
+	const int second = 2;
 	lucu_vector_push_back(&v, &second);
 	cr_assert(lucu_vector_is_empty(&v) == false);
 	cr_assert(lucu_vector_length(&v) == 2);
@@ -35,7 +35,7 @@ Test(vector, push_back) {
 	cr_expect((int*)lucu_vector_get(&v, 0) != &first);
 	cr_expect((int*)lucu_vector_get(&v, 1) != &second);
 
-	int third = 3;
+	const int third = 3;
 	lucu_vector_push_back(&v, &third);
 	cr_assert(lucu_vector_is_empty(&v) == false);
 	cr_assert(lucu_vector_length(&v) == 3);
@@ -54,14 +54,14 @@ Test(vector, push_front) {
 	cr_assert(lucu_vector_is_empty(&v) == true);
 	cr_assert(lucu_vector_length(&v) == 0);
 
-	int first = 1;
+	const int first = 1;
 	lucu_vector_push_front(&v, &first);
 	cr_assert(lucu_vector_is_empty(&v) == false);
 	cr_assert(lucu_vector_length(&v) == 1);
 	cr_assert(*(int*)lucu_vector_get(&v, 0) == 1);
 	cr_expect((int*)lucu_vector_get(&v, 0) != &first);
 
-	int second = 2;
+	const int second = 2;
 	lucu_vector_push_front(&v, &second);
 	cr_assert(lucu_vector_is_empty(&v) == false);
 	cr_assert(lucu_vector_length(&v) == 2);
@@ -70,7 +70,7 @@ Test(vector, push_front) {
 	cr_expect((int*)lucu_vector_get(&v, 0) != &second);
 	cr_expect((int*)lucu_vector_get(&v, 1) != &first);
 
-	int third = 3;
+	const int third = 3;
 	lucu_vector_push_front(&v, &third);
 	cr_assert(lucu_vector_is_empty(&v) == false);
 	cr_assert(lucu_vector_length(&v) == 3);
@@ -89,27 +89,27 @@ Test(vector, pop_back) {
 	cr_assert(lucu_vector_is_empty(&v) == true);
 	cr_assert(lucu_vector_length(&v) == 0);
 
-	int first = 1;
+	const int first = 1;
 	lucu_vector_push_back(&v, &first);
 	cr_assert(lucu_vector_is_empty(&v) == false);
 	cr_assert(lucu_vector_length(&v) == 1);
 	cr_assert(*(int*)lucu_vector_get(&v, 0) == 1);
 	cr_expect((int*)lucu_vector_get(&v, 0) != &first);
 
-	int* first_pop = lucu_vector_pop_back(&v);
+	int* const first_pop = lucu_vector_pop_back(&v);
 	cr_assert(lucu_vector_is_empty(&v) == true);
 	cr_assert(lucu_vector_length(&v) == 0);
 	cr_assert(*first_pop == 1);
 	cr_expect(&first != first_pop);
 
-	int second = 2;
+	const int second = 2;
 	lucu_vector_push_back(&v, &second);
 	cr_assert(lucu_vector_is_empty(&v) == false);
 	cr_assert(lucu_vector_length(&v) == 1);
 	cr_assert(*(int*)lucu_vector_get(&v, 0) == 2);
 	cr_expect((int*)lucu_vector_get(&v, 0) != &second);
 
-	int third = 3;
+	const int third = 3;
 	lucu_vector_push_back(&v, &third);
 	cr_assert(lucu_vector_is_empty(&v) == false);
 	cr_assert(lucu_vector_length(&v) == 2);
@@ -118,7 +118,7 @@ Test(vector, pop_back) {
 	cr_expect((int*)lucu_vector_get(&v, 0) != &second);
 	cr_expect((int*)lucu_vector_get(&v, 1) != &third);
 
-	int* third_pop = lucu_vector_pop_back(&v);
+	int* const third_pop = lucu_vector_pop_back(&v);
 	cr_assert(lucu_vector_is_empty(&v) == false);
 	cr_assert(lucu_vector_length(&v) == 1);
 	cr_assert(*third_pop == 3);
@@ -126,7 +126,7 @@ Test(vector, pop_back) {
 	cr_assert(*(int*)lucu_vector_get(&v, 0) == 2);
 	cr_expect((int*)lucu_vector_get(&v, 0) != &second);
 
-	int* second_pop = lucu_vector_pop_back(&v);
+	int* const second_pop = lucu_vector_pop_back(&v);
 	cr_assert(lucu_vector_is_empty(&v) == true);
 	cr_assert(lucu_vector_length(&v) == 0);
 	cr_assert(*second_pop == 2);
