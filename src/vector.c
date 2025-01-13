@@ -55,7 +55,7 @@ static void lucu_vector_increase_size(LucuVector* vector) {
 	vector->tail = j;
 }
 
-void lucu_vector_push_front(LucuVector* vector, void* data) {
+void lucu_vector_push_back(LucuVector* vector, void* data) {
 	if (vector->head == mod(vector->tail + 1, vector->size)) {
 		lucu_vector_increase_size(vector);
 	}
@@ -138,7 +138,7 @@ static bool lucu_vector_filter_func(void* data, void* params) {
 	bool (*filter_func)(void*, void*) = (bool (*)(void*, void*))((LucuGenericFunction*)pars[1])->f;
 	void* par = pars[2];
 	if (filter_func(data, par)) {
-		lucu_vector_push_front(vector, data);
+		lucu_vector_push_back(vector, data);
 	}
 	return false;
 }
@@ -157,7 +157,7 @@ static bool lucu_vector_map_func(void* data, void* params) {
 	LucuVector* vector = (LucuVector*)pars[0];
 	void* (*map_func)(void*, void*) = (void* (*)(void*, void*))((LucuGenericFunction*)pars[1])->f;
 	void* par = pars[2];
-	lucu_vector_push_front(vector, map_func(data, par));
+	lucu_vector_push_back(vector, map_func(data, par));
 	return false;
 }
 
