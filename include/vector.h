@@ -164,6 +164,15 @@ void* lucu_vector_get(LucuVector* vector, int index);
 void lucu_vector_remove(LucuVector* vector, int index);
 
 /**
+ * Insert an element at an index into a `LucuVector`.
+ *
+ * @param vector 'LucuVector' to insert into.
+ * @param data Element to insert and copy into `vector`.
+ * @param index Index to insert into.
+*/
+void lucu_vector_insert(LucuVector* vector, void* data, int index);
+
+/**
  * Iterate over elements of a `LucuVector`.
  *
  * @param vector 'LucuVector' to iterate over.

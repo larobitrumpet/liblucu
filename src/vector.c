@@ -144,6 +144,22 @@ void lucu_vector_remove(LucuVector* vector, int index) {
 	vector->tail = mod(vector->tail - 1, vector->size);
 }
 
+void lucu_vector_insert(LucuVector* vector, void* data, int index) {
+	assert(index >= 0);
+	if (index >= lucu_vector_length(vector)) {
+		lucu_vector_push_back(vector, data);
+		return;
+	}
+	if (vector->head == mod(vector->tail + 1, vector->size)) {
+		lucu_vector_increase_size(vector);
+	}
+	int in = lucu_vector_local_index_to_global_index(vector, index);
+	for (int i = vector->tail; i != in; i = mod(i - 1, vector->size)) {
+		memcpy((void*)((uintptr_t)vector->v + (size_t)i * vector->bytewidth), (void*)((uintptr_t)vector->v + (size_t)mod(i - 1, vector->size) * vector->bytewidth), vector->bytewidth);
+	}
+	memcpy((void*)((uintptr_t)vector->v + (size_t)in * vector->bytewidth), data, vector->bytewidth);
+}
+
 void lucu_vector_iterate(LucuVector* vector, bool (*func)(void*, void*), void* params) {
 	int i = vector->head;
 	while (i != vector->tail) {
