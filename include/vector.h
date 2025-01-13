@@ -181,6 +181,17 @@ LucuVector lucu_vector_filter(LucuVector* vector, bool (*filter_function)(void*,
  */
 LucuVector lucu_vector_map(LucuVector* vector, size_t target_bytewidth, void (*target_free_function)(void*), void* (*map_function)(void*, void*), void* params);
 
+/**
+ * Finds the min or max of a `LucuVector`.
+ *
+ * @param vector `LucuVector` to search through
+ * @param compare_function Function used to determine if an element
+ * is greater than or less than another element. Accepts the current
+ * min or max, an element from `vector`, and `params`. Returns `true`
+ * if the element from `vector` should replace the current min or max,
+ * returns `false` otherwise.
+ * @param params Passed to compare_function.
+ */
 void* lucu_vector_min_max(LucuVector* vector, bool (*compare_function)(void*, void*, void*), void* params);
 
 #endif
