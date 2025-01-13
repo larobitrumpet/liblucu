@@ -150,6 +150,7 @@ void lucu_vector_remove(LucuVector* vector, int index);
  * @param func Function to apply to each element. Accepts a pointer
  * to the element and `params`. Returns `true` if iteration should stop
  * and `false` if iteration should continue.
+ * @param params Passed to `func`.
  */
 void lucu_vector_iterate(LucuVector* vector, bool (*func)(void*, void*), void* params);
 
