@@ -117,10 +117,11 @@ void* lucu_vector_pop_front(LucuVector* vector);
  * @param vector The `LucuVector` to search.
  * @param data Pointer to data to compare to.
  * @param equal Function used to determine if an element is equal to `data`,
- * taking a pointer to each.
+ * taking a pointer to each and is passed `params`.
+ * @param params Passed as the last argument to `equal`.
  * @return The index of the element found. Is -1 if the element cannot be found.
  */
-int lucu_vector_index(LucuVector* vector, void* data, bool (*equal)(void*, void*));
+int lucu_vector_index(LucuVector* vector, void* data, bool (*equal)(void*, void*, void*), void* params);
 
 void lucu_vector_get(LucuVector* vector, int index, void* data);
 void lucu_vector_iterate(LucuVector* vector, bool (*func)(void*, void*), void* params);

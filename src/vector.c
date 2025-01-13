@@ -76,17 +76,30 @@ void* lucu_vector_pop_front(LucuVector* vector) {
 	return data;
 }
 
-int lucu_vector_index(LucuVector* vector, void* data, bool (*equal)(void*, void*)) {
-	int index = 0;
-	int i = vector->head;
-	while (i != vector->tail) {
-		if (equal((void*)((uintptr_t)vector->v + (size_t)i * vector->bytewidth), data)) {
-			return index;
-		}
-		i = mod(i + 1, vector->size);
-		index++;
+static bool lucu_vector_index_func(void* data, void* params) {
+	void** pars = (void**)params;
+	void* d = pars[0];
+	bool (*equal)(void*, void*, void*) = (bool (*)(void*, void*, void*))((LucuGenericFunction*)pars[1])->f;
+	int* index = pars[2];
+	void* par = pars[3];
+	if (equal(data, d, par)) {
+		return true;
 	}
-	return -1;
+	*index += 1;
+	return false;
+}
+
+int lucu_vector_index(LucuVector* vector, void* data, bool (*equal)(void*, void*, void*), void* params) {
+	int index = 0;
+	LucuGenericFunction eq;
+	eq.f = (void (*)(void))equal;
+	void* pars[] = {data, (void*)&eq, (void*)&index, params};
+	lucu_vector_iterate(vector, lucu_vector_index_func, pars);
+	if (index == lucu_vector_length(vector)) {
+		return -1;
+	} else {
+		return index;
+	}
 }
 
 static int lucu_vector_local_index_to_global_index(LucuVector* vector, int index) {
