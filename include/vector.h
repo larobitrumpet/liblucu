@@ -153,7 +153,20 @@ void lucu_vector_remove(LucuVector* vector, int index);
  */
 void lucu_vector_iterate(LucuVector* vector, bool (*func)(void*, void*), void* params);
 
+/**
+ * Filters through a `LucuVector`.
+ *
+ * Iterates through elements in `LucuVector` that pass `filter_function`
+ * and copies them into a new `LucuVector`. The original `vector` is unchanged.
+ * @param vector `LucuVector` to filter through.
+ * @param filter_function Function used to determine if an element should be
+ * included. Accepts an element and `params`. Returns `true` if the element
+ * should be included and `false` if it shouldn't.
+ * @param param Passed to `filter_function`
+ * @return A new LucuVector with copied elements
+ */
 LucuVector lucu_vector_filter(LucuVector* vector, bool (*filter_function)(void*, void*), void* params);
+
 LucuVector lucu_vector_map(LucuVector* vector, size_t target_bytewidth, void* (*map_function)(void*, void*), void* params);
 void* lucu_vector_min_max(LucuVector* vector, bool (*compare_function)(void*, void*, void*), void* params);
 

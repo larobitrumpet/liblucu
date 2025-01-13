@@ -138,13 +138,13 @@ static bool lucu_vector_filter_func(void* data, void* params) {
 	bool (*filter_func)(void*, void*) = (bool (*)(void*, void*))((LucuGenericFunction*)pars[1])->f;
 	void* par = pars[2];
 	if (filter_func(data, par)) {
-		lucu_vector_enqueue(vector, data);
+		lucu_vector_push_front(vector, data);
 	}
 	return false;
 }
 
 LucuVector lucu_vector_filter(LucuVector* vector, bool (*filter_func)(void*, void*), void* params) {
-	LucuVector new_vector = lucu_construct_vector(vector->bytewidth);
+	LucuVector new_vector = lucu_construct_vector(vector->bytewidth, vector->free_function);
 	LucuGenericFunction ff;
 	ff.f = (void (*)(void))filter_func;
 	void* pars[] = {(void*)&new_vector, (void*)&ff, params};
