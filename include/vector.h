@@ -120,6 +120,16 @@ void lucu_vector_push_front(LucuVector* vector, void* data);
 void* lucu_vector_pop_front(LucuVector* vector);
 
 /**
+ * Pop an element from the back of a `LucuVector`.
+ *
+ * @param vector The `LucuVector` to pop from.
+ * @return Pointer to the element that was at the back of `vector`.
+ * This data will have to be freed by the user.
+ * Is `NULL` if `vector` is empty.
+ */
+void* lucu_vector_pop_back(LucuVector* vector);
+
+/**
  * Gets the index of an element in a `LucuVector`.
  *
  * Compares each element of `vector` until it finds an element

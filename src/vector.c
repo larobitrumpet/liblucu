@@ -84,6 +84,19 @@ void* lucu_vector_pop_front(LucuVector* vector) {
 	return data;
 }
 
+void* lucu_vector_pop_back(LucuVector* vector) {
+	if (lucu_vector_is_empty(vector)) {
+		return NULL;
+	}
+	void* data = malloc(vector->bytewidth);
+	vector->tail = mod(vector->tail - 1, vector->size);
+	memcpy(data, (void*)((uintptr_t)vector->v + (size_t)vector->tail * vector->bytewidth), vector->bytewidth);
+	if (vector->free_function != NULL) {
+		vector->free_function((void*)((uintptr_t)vector->v + (size_t)vector->tail * vector->bytewidth));
+	}
+	return data;
+}
+
 static bool lucu_vector_index_func(void* data, void* params) {
 	void** pars = (void**)params;
 	void* d = pars[0];
