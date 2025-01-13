@@ -167,7 +167,19 @@ void lucu_vector_iterate(LucuVector* vector, bool (*func)(void*, void*), void* p
  */
 LucuVector lucu_vector_filter(LucuVector* vector, bool (*filter_function)(void*, void*), void* params);
 
-LucuVector lucu_vector_map(LucuVector* vector, size_t target_bytewidth, void* (*map_function)(void*, void*), void* params);
+/**
+ * Maps elements of a `LucuVector`.
+ *
+ * Maps elements from `vector` into a new `LucuVector`.
+ * @param vector 'LucuVector' to map from.
+ * @param target_bytewidth The number of bytes that the mapped to data takes up.
+ * @param target_free_function Function used to free mapped to data.
+ * @param map_function Function used to map elements.
+ * Takes an element from `vector` and `params`.
+ * @param params Passed to `map_function`.
+ */
+LucuVector lucu_vector_map(LucuVector* vector, size_t target_bytewidth, void (*target_free_function)(void*), void* (*map_function)(void*, void*), void* params);
+
 void* lucu_vector_min_max(LucuVector* vector, bool (*compare_function)(void*, void*, void*), void* params);
 
 #endif

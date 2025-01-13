@@ -157,12 +157,12 @@ static bool lucu_vector_map_func(void* data, void* params) {
 	LucuVector* vector = (LucuVector*)pars[0];
 	void* (*map_func)(void*, void*) = (void* (*)(void*, void*))((LucuGenericFunction*)pars[1])->f;
 	void* par = pars[2];
-	lucu_vector_enqueue(vector, map_func(data, par));
+	lucu_vector_push_front(vector, map_func(data, par));
 	return false;
 }
 
-LucuVector lucu_vector_map(LucuVector* vector, size_t target_bytewidth, void* (*map_func)(void*, void*), void* params) {
-	LucuVector new_vector = lucu_construct_vector(target_bytewidth);
+LucuVector lucu_vector_map(LucuVector* vector, size_t target_bytewidth, void (*target_free_function)(void*), void* (*map_func)(void*, void*), void* params) {
+	LucuVector new_vector = lucu_construct_vector(target_bytewidth, target_free_function);
 	LucuGenericFunction mf;
 	mf.f = (void (*)(void))map_func;
 	void* pars[] = {(void*)&new_vector, (void*)&mf, params};
