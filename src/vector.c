@@ -59,8 +59,16 @@ void lucu_vector_push_back(LucuVector* vector, void* data) {
 	if (vector->head == mod(vector->tail + 1, vector->size)) {
 		lucu_vector_increase_size(vector);
 	}
-	memcpy((void*)((uintptr_t)vector->v + (uintptr_t)vector->tail * vector->bytewidth), data, vector->bytewidth);
+	memcpy((void*)((uintptr_t)vector->v + (size_t)vector->tail * vector->bytewidth), data, vector->bytewidth);
 	vector->tail = mod(vector->tail + 1, vector->size);
+}
+
+void lucu_vector_push_front(LucuVector* vector, void* data) {
+	if (mod(vector->head - 1, vector->size) == vector->tail) {
+		lucu_vector_increase_size(vector);
+	}
+	vector->head = mod(vector->head - 1, vector->size);
+	memcpy((void*)((uintptr_t)vector->v + (size_t)vector->head * vector->bytewidth), data, vector->bytewidth);
 }
 
 void* lucu_vector_pop_front(LucuVector* vector) {

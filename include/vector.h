@@ -100,6 +100,16 @@ int lucu_vector_length(LucuVector* vector);
 void lucu_vector_push_back(LucuVector* vector, void* data);
 
 /**
+ * Push an element to the front of a `LucuVector`.
+ *
+ * @param vector The `LucuVector` to prepend data to.
+ * @param data Pointer to data to copy into `vector`.
+ * @pre `data` is not `NULL` and points to valid data
+ * the size of the `bytewidth` used to create `vector`.
+ */
+void lucu_vector_push_front(LucuVector* vector, void* data);
+
+/**
  * Pop an element from the front of a `LucuVector`.
  *
  * @param vector The `LucuVector` to pop from.
