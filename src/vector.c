@@ -5,21 +5,20 @@ static inline int mod(int a, int b) {
 	return ((a % b) + b) % b;
 }
 
-LucuVector lucu_construct_vector(size_t bytewidth) {
+LucuVector lucu_construct_vector(size_t bytewidth, void (*free_function)(void*)) {
 	LucuVector vector;
 	vector.bytewidth = bytewidth;
 	vector.size = LUCU_VECTOR_INIT_SIZE;
 	vector.v = malloc(vector.bytewidth * (size_t)vector.size);
 	vector.head = 0;
 	vector.tail = 0;
+	vector.free_function = free_function;
 	return vector;
 }
 
 static bool lucu_deconstruct_vector_func(void* data, void* params) {
-	void** pars = (void**)params;
-	void (*free_function)(void*, void*) = (void (*)(void*, void*))((LucuGenericFunction*)pars[0])->f;
-	void* par = pars[1];
-	free_function(data, par);
+	void (*free_function)(void*) = (void (*)(void*))((LucuGenericFunction*)params)->f;
+	free_function(data);
 	return false;
 }
 

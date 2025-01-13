@@ -42,30 +42,32 @@ typedef struct LucuVector {
 	int head;
 	/// The index of the last element of the circular array plus 1 mod `size`.
 	int tail;
+	/// Function used to free elements of the `LucuVector`.
+	/// See `lucu_construct_vector` for more information
+	void (*free_function)(void*);
 } LucuVector;
 
 /**
  * Construct a new `LucuVector`.
  *
  * Creates a new `LucuVector`.
- * **Only** use this function to create a new `LucuVector`.
+ * Create new `LucuVector`'s using **only** this function.
  *
  * @param bytewidth The number of bytes that an element takes up.
+ * @param free_function Function used to free elements.
+ * Can be `NULL` to forgo freeing elements.
+ * Takes a `void*` pointing to the element to be freed.
  * @return A new `LucuVector`
  */
-LucuVector lucu_construct_vector(size_t bytewidth);
+LucuVector lucu_construct_vector(size_t bytewidth, void (*free_function)(void*));
 
 /**
  * Deconstructs a `LucuVector`.
  *
  * Frees the memory allocated to a `LucuVector` and optionally it's elements.
  * @param vector The `LucuVector` to deconstruct.
- * @param free_function A function used to free the elements of the vector.
- * Can pass `NULL` to not free any of the elements. Takes a `void*`, a pointer
- * to the element, and a `void*` to `params`.
- * @param params A `void*` passed as the second argument to `free_function`
  */
-void lucu_deconstruct_vector(LucuVector* vector, void (*free_function)(void*, void*), void* params);
+void lucu_deconstruct_vector(LucuVector* vector);
 
 /**
  * Tests if a `LucuVector` is empty.
@@ -97,7 +99,7 @@ int lucu_vector_length(LucuVector* vector);
  */
 void lucu_vector_enqueue(LucuVector* vector, void* data);
 
-int lucu_vector_dequeue(LucuVector* vector, void* data);
+int lucu_vector_dequeue(LucuVector* vector);
 int lucu_vector_index(LucuVector* vector, void* data, bool (*equal)(void*, void*));
 void lucu_vector_get(LucuVector* vector, int index, void* data);
 void lucu_vector_iterate(LucuVector* vector, bool (*func)(void*, void*), void* params);
