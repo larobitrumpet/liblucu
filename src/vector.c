@@ -217,7 +217,7 @@ static bool lucu_vector_map_func(void* const data, void* const params) {
 LucuVector lucu_vector_map(LucuVector vector, const size_t target_bytewidth, void (* const target_free_function)(void*), void* (* const map_func)(void*, void*), void* const params) {
 	LucuVector new_vector = lucu_construct_vector(target_bytewidth, target_free_function);
 	LucuGenericFunction mf = { (void (*)(void))map_func };
-	void* pars[] = {(void*)&new_vector, (void*)&mf, params};
+	void* pars[] = {(void*)new_vector, (void*)&mf, params};
 	lucu_vector_iterate(vector, lucu_vector_map_func, (void*)pars);
 	return new_vector;
 }
