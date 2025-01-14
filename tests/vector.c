@@ -432,3 +432,40 @@ Test(vector, map) {
 	lucu_deconstruct_vector(v);
 	lucu_deconstruct_vector(m);
 }
+
+bool min(void* a, void* b, void* p) {
+	(void)p;
+	return b < a;
+}
+
+bool max(void* a, void* b, void* p) {
+	(void)p;
+	return b > a;
+}
+
+Test(vector, min_max) {
+	LucuVector v = lucu_construct_vector(sizeof(int), NULL);
+
+	int a = 1;
+	int b = 2;
+	int c = 3;
+	int d = 8;
+	int e = -2;
+	int f = 6;
+	int g = -6;
+	int h = 5;
+
+	lucu_vector_push_back(v, &a);
+	lucu_vector_push_back(v, &b);
+	lucu_vector_push_back(v, &c);
+	lucu_vector_push_back(v, &d);
+	lucu_vector_push_back(v, &e);
+	lucu_vector_push_back(v, &f);
+	lucu_vector_push_back(v, &g);
+	lucu_vector_push_back(v, &h);
+
+	cr_expect(*(int*)lucu_vector_min_max(v, min, NULL) == -6);
+	cr_expect(*(int*)lucu_vector_min_max(v, max, NULL) == 8);
+
+	lucu_deconstruct_vector(v);
+}
