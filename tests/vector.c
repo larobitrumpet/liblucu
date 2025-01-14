@@ -1,19 +1,6 @@
 #include "../include/vector.h"
 #include <criterion/criterion.h>
 
-//Test(vector, construct) {
-//	LucuVector v = lucu_construct_vector(sizeof(int), NULL);
-//	cr_expect(v.v != NULL);
-//	cr_expect(v.bytewidth == sizeof(int));
-//	cr_expect(v.size == LUCU_VECTOR_INIT_SIZE);
-//	cr_expect(v.head == 0);
-//	cr_expect(v.tail == 0);
-//	cr_expect(v.free_function == NULL);
-//	cr_expect(lucu_vector_is_empty(v) == true);
-//	cr_expect(lucu_vector_length(v) == 0);
-//	lucu_deconstruct_vector(v);
-//}
-
 Test(vector, push_back) {
 	LucuVector v = lucu_construct_vector(sizeof(int), NULL);
 	cr_assert(lucu_vector_is_empty(v) == true);
