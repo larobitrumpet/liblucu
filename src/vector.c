@@ -200,7 +200,7 @@ static bool lucu_vector_filter_func(void* const data, void* const params) {
 LucuVector lucu_vector_filter(LucuVector vector, bool (* const filter_func)(void*, void*), void* const params) {
 	LucuVector new_vector = lucu_construct_vector(vector->bytewidth, vector->free_function);
 	LucuGenericFunction ff = { (void (*)(void))filter_func };
-	void* pars[] = {(void*)&new_vector, (void*)&ff, params};
+	void* pars[] = {(void*)new_vector, (void*)&ff, params};
 	lucu_vector_iterate(vector, lucu_vector_filter_func, (void*)pars);
 	return new_vector;
 }
