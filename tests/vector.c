@@ -1,5 +1,6 @@
 #include "../include/vector.h"
 #include <criterion/criterion.h>
+#include <criterion/internal/test.h>
 
 Test(vector, push_back) {
 	LucuVector v = lucu_construct_vector(sizeof(int), NULL);
@@ -177,6 +178,90 @@ Test(vector, pop_front) {
 	free(first_pop);
 	free(second_pop);
 	free(third_pop);
+
+	lucu_deconstruct_vector(v);
+}
+
+bool int_equal(void* a, void* b, void* p) {
+	(void)p;
+	return *(int*)a == *(int*)b;
+}
+
+Test(vector, find_index) {
+	LucuVector v = lucu_construct_vector(sizeof(int), NULL);
+	cr_assert(lucu_vector_is_empty(v) == true);
+	cr_assert(lucu_vector_length(v) == 0);
+
+	int first = 1;
+	lucu_vector_push_back(v, &first);
+	cr_assert(lucu_vector_is_empty(v) == false);
+	cr_assert(lucu_vector_length(v) == 1);
+	cr_assert(*(int*)lucu_vector_get(v, 0) == 1);
+
+	int second = 2;
+	lucu_vector_push_back(v, &second);
+	cr_assert(lucu_vector_is_empty(v) == false);
+	cr_assert(lucu_vector_length(v) == 2);
+	cr_assert(*(int*)lucu_vector_get(v, 0) == 1);
+	cr_assert(*(int*)lucu_vector_get(v, 1) == 2);
+
+	int third = 3;
+	lucu_vector_push_back(v, &third);
+	cr_assert(lucu_vector_is_empty(v) == false);
+	cr_assert(lucu_vector_length(v) == 3);
+	cr_assert(*(int*)lucu_vector_get(v, 0) == 1);
+	cr_assert(*(int*)lucu_vector_get(v, 1) == 2);
+	cr_assert(*(int*)lucu_vector_get(v, 2) == 3);
+
+	int fourth = 4;
+	lucu_vector_push_back(v, &fourth);
+	cr_assert(lucu_vector_is_empty(v) == false);
+	cr_assert(lucu_vector_length(v) == 4);
+	cr_assert(*(int*)lucu_vector_get(v, 0) == 1);
+	cr_assert(*(int*)lucu_vector_get(v, 1) == 2);
+	cr_assert(*(int*)lucu_vector_get(v, 2) == 3);
+	cr_assert(*(int*)lucu_vector_get(v, 3) == 4);
+
+	cr_expect(lucu_vector_index(v, &first, int_equal, NULL) == 0);
+	cr_assert(lucu_vector_is_empty(v) == false);
+	cr_assert(lucu_vector_length(v) == 4);
+	cr_assert(*(int*)lucu_vector_get(v, 0) == 1);
+	cr_assert(*(int*)lucu_vector_get(v, 1) == 2);
+	cr_assert(*(int*)lucu_vector_get(v, 2) == 3);
+	cr_assert(*(int*)lucu_vector_get(v, 3) == 4);
+
+	cr_expect(lucu_vector_index(v, &second, int_equal, NULL) == 1);
+	cr_assert(lucu_vector_is_empty(v) == false);
+	cr_assert(lucu_vector_length(v) == 4);
+	cr_assert(*(int*)lucu_vector_get(v, 0) == 1);
+	cr_assert(*(int*)lucu_vector_get(v, 1) == 2);
+	cr_assert(*(int*)lucu_vector_get(v, 2) == 3);
+	cr_assert(*(int*)lucu_vector_get(v, 3) == 4);
+
+	cr_expect(lucu_vector_index(v, &third, int_equal, NULL) == 2);
+	cr_assert(lucu_vector_is_empty(v) == false);
+	cr_assert(lucu_vector_length(v) == 4);
+	cr_assert(*(int*)lucu_vector_get(v, 0) == 1);
+	cr_assert(*(int*)lucu_vector_get(v, 1) == 2);
+	cr_assert(*(int*)lucu_vector_get(v, 2) == 3);
+	cr_assert(*(int*)lucu_vector_get(v, 3) == 4);
+
+	cr_expect(lucu_vector_index(v, &fourth, int_equal, NULL) == 3);
+	cr_assert(lucu_vector_is_empty(v) == false);
+	cr_assert(lucu_vector_length(v) == 4);
+	cr_assert(*(int*)lucu_vector_get(v, 0) == 1);
+	cr_assert(*(int*)lucu_vector_get(v, 1) == 2);
+	cr_assert(*(int*)lucu_vector_get(v, 2) == 3);
+	cr_assert(*(int*)lucu_vector_get(v, 3) == 4);
+
+	int fifth = 5;
+	cr_expect(lucu_vector_index(v, &fifth, int_equal, NULL) == -1);
+	cr_assert(lucu_vector_is_empty(v) == false);
+	cr_assert(lucu_vector_length(v) == 4);
+	cr_assert(*(int*)lucu_vector_get(v, 0) == 1);
+	cr_assert(*(int*)lucu_vector_get(v, 1) == 2);
+	cr_assert(*(int*)lucu_vector_get(v, 2) == 3);
+	cr_assert(*(int*)lucu_vector_get(v, 3) == 4);
 
 	lucu_deconstruct_vector(v);
 }
