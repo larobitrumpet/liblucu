@@ -1,8 +1,5 @@
 #include "../include/vector.h"
 #include <criterion/criterion.h>
-#include <criterion/internal/assert.h>
-#include <criterion/internal/test.h>
-#include <stdlib.h>
 
 Test(vector, push_back) {
 	LucuVector v = lucu_construct_vector(sizeof(int), NULL);
@@ -435,12 +432,12 @@ Test(vector, map) {
 
 bool min(void* a, void* b, void* p) {
 	(void)p;
-	return b < a;
+	return *(int*)a < *(int*)b;
 }
 
 bool max(void* a, void* b, void* p) {
 	(void)p;
-	return b > a;
+	return *(int*)a > *(int*)b;
 }
 
 Test(vector, min_max) {
