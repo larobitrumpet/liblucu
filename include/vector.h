@@ -114,6 +114,30 @@ void* lucu_vector_pop_front(LucuVector vector);
 void* lucu_vector_pop_back(LucuVector vector);
 
 /**
+ * Alias for `lucu_vector_push_back`.
+ * Useful when using a `LucuVector` as a stack.
+ */
+void lucu_vector_push(LucuVector vector, const void* const data);
+
+/**
+ * Alias for `lucu_vector_pop_back`.
+ * Useful when using a `LucuVector` as a stack.
+ */
+void* lucu_vector_pop(LucuVector vector);
+
+/**
+ * Alias for `lucu_vector_push_back`.
+ * Useful when using a `LucuVector` as a queue.
+ */
+void lucu_vector_enqueue(LucuVector vector, const void* const data);
+
+/**
+ * Alias for `lucu_vector_pop_front`.
+ * Useful when using a `LucuVector` as a queue.
+ */
+void* lucu_vector_dequeue(LucuVector vector);
+
+/**
  * Gets the index of an element in a `LucuVector`.
  *
  * Compares each element of `vector` until it finds an element

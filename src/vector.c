@@ -80,6 +80,14 @@ void lucu_vector_push_back(LucuVector vector, const void* const data) {
 	vector->tail = mod(vector->tail + 1, vector->size);
 }
 
+void lucu_vector_push(LucuVector vector, const void* const data) {
+	lucu_vector_push_back(vector, data);
+}
+
+void lucu_vector_enqueue(LucuVector vector, const void* const data) {
+	lucu_vector_push_back(vector, data);
+}
+
 void lucu_vector_push_front(LucuVector vector, const void* const data) {
 	if (mod(vector->head - 1, vector->size) == vector->tail) {
 		lucu_vector_increase_size(vector);
@@ -101,6 +109,10 @@ void* lucu_vector_pop_front(LucuVector vector) {
 	return data;
 }
 
+void* lucu_vector_dequeue(LucuVector vector) {
+	return lucu_vector_pop_front(vector);
+}
+
 void* lucu_vector_pop_back(LucuVector vector) {
 	if (lucu_vector_is_empty(vector)) {
 		return NULL;
@@ -112,6 +124,10 @@ void* lucu_vector_pop_back(LucuVector vector) {
 		vector->free_function((void*)((uintptr_t)vector->v + (size_t)vector->tail * vector->bytewidth));
 	}
 	return data;
+}
+
+void* lucu_vector_pop(LucuVector vector) {
+	return lucu_vector_pop_back(vector);
 }
 
 static bool lucu_vector_index_func(void* const data, void* params) {
