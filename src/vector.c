@@ -173,6 +173,7 @@ void lucu_vector_insert(LucuVector vector, const void* const data, const int ind
 	for (int i = vector->tail; i != in; i = mod(i - 1, vector->size)) {
 		memcpy((void*)((uintptr_t)vector->v + (size_t)i * vector->bytewidth), (void*)((uintptr_t)vector->v + (size_t)mod(i - 1, vector->size) * vector->bytewidth), vector->bytewidth);
 	}
+	vector->tail = mod(vector->tail + 1, vector->size);
 	memcpy((void*)((uintptr_t)vector->v + (size_t)in * vector->bytewidth), data, vector->bytewidth);
 }
 
