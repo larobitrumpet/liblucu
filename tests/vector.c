@@ -2,6 +2,7 @@
 #include <criterion/criterion.h>
 #include <criterion/internal/assert.h>
 #include <criterion/internal/test.h>
+#include <stdlib.h>
 
 Test(vector, push_back) {
 	LucuVector v = lucu_construct_vector(sizeof(int), NULL);
@@ -378,4 +379,56 @@ Test(vector, filter) {
 
 	lucu_deconstruct_vector(v);
 	lucu_deconstruct_vector(f);
+}
+
+void* map(void* n, void* p) {
+	(void)p;
+	char* c = malloc(sizeof(char));
+	*c = (char)(*(int*)n + (int)'A');
+	return c;
+}
+
+Test(vector, map) {
+	LucuVector v = lucu_construct_vector(sizeof(int), NULL);
+
+	for (int i = 0; i < 26; i++) {
+		lucu_vector_push_back(v, &i);
+	}
+
+	LucuVector m = lucu_vector_map(v, sizeof(char), NULL, map, NULL);
+
+	cr_assert(lucu_vector_length(m) == 26);
+	cr_assert(*(char*)lucu_vector_get(m, 0) == 'A');
+	cr_assert(*(char*)lucu_vector_get(m, 1) == 'B');
+	cr_assert(*(char*)lucu_vector_get(m, 2) == 'C');
+	cr_assert(*(char*)lucu_vector_get(m, 3) == 'D');
+	cr_assert(*(char*)lucu_vector_get(m, 4) == 'E');
+	cr_assert(*(char*)lucu_vector_get(m, 5) == 'F');
+	cr_assert(*(char*)lucu_vector_get(m, 6) == 'G');
+	cr_assert(*(char*)lucu_vector_get(m, 7) == 'H');
+	cr_assert(*(char*)lucu_vector_get(m, 8) == 'I');
+	cr_assert(*(char*)lucu_vector_get(m, 9) == 'J');
+	cr_assert(*(char*)lucu_vector_get(m, 10) == 'K');
+	cr_assert(*(char*)lucu_vector_get(m, 11) == 'L');
+	cr_assert(*(char*)lucu_vector_get(m, 12) == 'M');
+	cr_assert(*(char*)lucu_vector_get(m, 13) == 'N');
+	cr_assert(*(char*)lucu_vector_get(m, 14) == 'O');
+	cr_assert(*(char*)lucu_vector_get(m, 15) == 'P');
+	cr_assert(*(char*)lucu_vector_get(m, 16) == 'Q');
+	cr_assert(*(char*)lucu_vector_get(m, 17) == 'R');
+	cr_assert(*(char*)lucu_vector_get(m, 18) == 'S');
+	cr_assert(*(char*)lucu_vector_get(m, 19) == 'T');
+	cr_assert(*(char*)lucu_vector_get(m, 20) == 'U');
+	cr_assert(*(char*)lucu_vector_get(m, 21) == 'V');
+	cr_assert(*(char*)lucu_vector_get(m, 22) == 'W');
+	cr_assert(*(char*)lucu_vector_get(m, 23) == 'X');
+	cr_assert(*(char*)lucu_vector_get(m, 24) == 'Y');
+	cr_assert(*(char*)lucu_vector_get(m, 25) == 'Z');
+
+	for (int i = 0; i < 26; i++) {
+		cr_assert(*(int*)lucu_vector_get(v, i) == i);
+	}
+
+	lucu_deconstruct_vector(v);
+	lucu_deconstruct_vector(m);
 }
