@@ -1,5 +1,6 @@
 #include "../include/vector.h"
 #include <criterion/criterion.h>
+#include <criterion/internal/assert.h>
 #include <criterion/internal/test.h>
 
 Test(vector, push_back) {
@@ -348,4 +349,33 @@ Test(vector, insert) {
 	cr_assert(*(int*)lucu_vector_get(v, 4) == 5);
 
 	lucu_deconstruct_vector(v);
+}
+
+bool even(void* n, void* p) {
+	(void)p;
+	return *(int*)n % 2 == 0;
+}
+
+Test(vector, filter) {
+	LucuVector v = lucu_construct_vector(sizeof(int), NULL);
+	for (int i = 0; i < 24; i++) {
+		lucu_vector_push_back(v, &i);
+	}
+	LucuVector f = lucu_vector_filter(v, even, NULL);
+	cr_assert(lucu_vector_length(f) == 12);
+	cr_expect(*(int*)lucu_vector_get(f, 0) == 0);
+	cr_expect(*(int*)lucu_vector_get(f, 1) == 2);
+	cr_expect(*(int*)lucu_vector_get(f, 2) == 4);
+	cr_expect(*(int*)lucu_vector_get(f, 3) == 6);
+	cr_expect(*(int*)lucu_vector_get(f, 4) == 8);
+	cr_expect(*(int*)lucu_vector_get(f, 5) == 10);
+	cr_expect(*(int*)lucu_vector_get(f, 6) == 12);
+	cr_expect(*(int*)lucu_vector_get(f, 7) == 14);
+	cr_expect(*(int*)lucu_vector_get(f, 8) == 16);
+	cr_expect(*(int*)lucu_vector_get(f, 9) == 18);
+	cr_expect(*(int*)lucu_vector_get(f, 10) == 20);
+	cr_expect(*(int*)lucu_vector_get(f, 11) == 22);
+
+	lucu_deconstruct_vector(v);
+	lucu_deconstruct_vector(f);
 }
