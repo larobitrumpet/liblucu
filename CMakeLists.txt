@@ -4,8 +4,7 @@ project(liblucu)
 
 option(DEBUG "Build a debug version" OFF)
 
-# There appears to be a bug in gcc where -Warray-bounds is giving off false positives when optimizations are enabled, thus we turn it off
-add_compile_options(-std=c23 -Wall -Wextra -Werror -pedantic -pedantic-errors -Wfloat-equal -Wundef -Wshadow -Wcast-align=strict -Wstrict-overflow=5 -Wcast-qual -Wswitch-default -Wswitch-enum -Wconversion -Warith-conversion -Wformat=2 -Wformat-overflow=2 -Wformat-nonliteral -Wformat-signedness -Wformat-truncation=2 -Wmissing-include-dirs -Wno-array-bounds)
+add_compile_options(-std=c23 -Wall -Wextra -Werror -pedantic -pedantic-errors -Wfloat-equal -Wundef -Wshadow -Wcast-align=strict -Wstrict-overflow=5 -Wcast-qual -Wswitch-default -Wswitch-enum -Wconversion -Warith-conversion -Wformat=2 -Wformat-overflow=2 -Wformat-nonliteral -Wformat-signedness -Wformat-truncation=2 -Wmissing-include-dirs)
 
 if (${DEBUG})
 	add_compile_options(-Og -ggdb)
