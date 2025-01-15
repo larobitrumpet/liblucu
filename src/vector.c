@@ -5,6 +5,21 @@
 #include <assert.h>
 #include <stdio.h>
 
+/**
+ * Initial size of the vector.
+ *
+ * The number of elements to initially allocate memory for when creating a new
+ * vector. **Must** be an integer greater than 0.
+ */
+#define LUCU_VECTOR_INIT_SIZE 16
+/**
+ * Size increase multiplier.
+ *
+ * When increasing the size of a vector, the size is multiplied by this
+ * constant. **Must** be greater than 1.
+ */
+#define LUCU_VECTOR_SIZE_INCREASE 1.5
+
 static inline int mod(const int a, const int b) {
 	return ((a % b) + b) % b;
 }
