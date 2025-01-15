@@ -47,6 +47,25 @@ void lucu_deconstruct_vector(LucuVector vector) {
 	free(vector->v);
 }
 
+static bool lucu_vector_print_func(void* const data, void* params) {
+	void** pars = (void**)params;
+	void (*print_function)(void*, void*) = (void (*)(void*, void*))((LucuGenericFunction*)pars[0])->f;
+	void* par = pars[1];
+	print_function(data, par);
+	printf(",");
+	return false;
+}
+
+void lucu_vector_print(LucuVector vector, void (*print_function)(void*, void*), void* params) {
+	printf("[");
+
+	LucuGenericFunction pf = { (void (*)(void))print_function };
+	void* pars[] = {(void*)&pf, params};
+	lucu_vector_iterate(vector, lucu_vector_print_func, (void*)pars);
+
+	printf("]");
+}
+
 bool lucu_vector_is_empty(LucuVector vector) {
 	return vector->head == vector->tail;
 }
@@ -128,6 +147,14 @@ void* lucu_vector_pop_back(LucuVector vector) {
 
 void* lucu_vector_pop(LucuVector vector) {
 	return lucu_vector_pop_back(vector);
+}
+
+void lucu_vector_swap(LucuVector vector, const int index_1, const int index_2) {
+	void* tmp = malloc(vector->bytewidth);
+	memcpy(tmp, lucu_vector_get(vector, index_1), vector->bytewidth);
+	memcpy(lucu_vector_get(vector, index_1), lucu_vector_get(vector, index_2), vector->bytewidth);
+	memcpy(lucu_vector_get(vector, index_2), tmp, vector->bytewidth);
+	free(tmp);
 }
 
 static bool lucu_vector_index_func(void* const data, void* params) {
@@ -254,4 +281,67 @@ void* lucu_vector_min_max(LucuVector vector, bool (* const compare_func)(void*, 
 	void* pars[] = {(void*)&cf, (void*)&min_max, params};
 	lucu_vector_iterate(vector, lucu_vector_min_max_func, (void*)pars);
 	return min_max;
+}
+
+void merge(LucuVector vector, const int start, const int middle, const int end, bool (*compare_function)(void*, void*, void*), void* params) {
+	LucuVector merged = lucu_construct_vector(vector->bytewidth, vector->free_function);
+
+	int i = start;
+	int j = middle;
+
+	while (i < middle && j < end) {
+		if (compare_function(lucu_vector_get(vector, i), lucu_vector_get(vector, j), params)) {
+			lucu_vector_push(merged, lucu_vector_get(vector, i));
+			i++;
+		} else {
+			lucu_vector_push(merged, lucu_vector_get(vector, j));
+			j++;
+		}
+	}
+
+	while (i < middle) {
+		lucu_vector_push(merged, lucu_vector_get(vector, i));
+		i++;
+	}
+
+	while (j < end) {
+		lucu_vector_push(merged, lucu_vector_get(vector, j));
+		j++;
+	}
+
+	const int local_head = lucu_vector_local_index_to_global_index(vector, start);
+	const int local_end = lucu_vector_local_index_to_global_index(vector, end);
+
+	if (local_end >= local_head) {
+		memcpy((void*)((uintptr_t)vector->v + (size_t)local_head * vector->bytewidth), merged->v, vector->bytewidth * (size_t)lucu_vector_length(merged));
+	} else {
+		memcpy((void*)((uintptr_t)vector->v + (size_t)local_head * vector->bytewidth), merged->v, vector->bytewidth * (size_t)(vector->size - local_head));
+		memcpy(vector->v, (void*)((uintptr_t)merged->v + (size_t)(vector->size - local_head)), vector->bytewidth * (size_t)(lucu_vector_length(merged) - (vector->size - local_head)));
+	}
+
+	lucu_deconstruct_vector(merged);
+}
+
+void merge_sort(LucuVector vector, const int start, const int end, bool (*compare_function)(void*, void*, void*), void* params) {
+	if (start == end) {
+		return;
+	} else if (end - start == 1) {
+		return;
+	} else if (end - start == 2) {
+		if (!compare_function(lucu_vector_get(vector, start), lucu_vector_get(vector, start + 1), params)) {
+			lucu_vector_swap(vector, start, start + 1);
+		}
+		return;
+	}
+
+	const int middle = (end - start) / 2 + start;
+
+	merge_sort(vector, start, middle, compare_function, params);
+	merge_sort(vector, middle, end, compare_function, params);
+
+	merge(vector, start, middle, end, compare_function, params);
+}
+
+void lucu_vector_sort(LucuVector vector, bool (*compare_function)(void*, void*, void*), void* params) {
+	merge_sort(vector, 0, lucu_vector_length(vector), compare_function, params);
 }

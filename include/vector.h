@@ -8,6 +8,7 @@
 #include <stdbool.h>
 #include <string.h>
 #include <assert.h>
+#include <stdio.h>
 
 /**
  * Initial size of the vector.
@@ -53,6 +54,15 @@ LucuVector lucu_construct_vector(const size_t bytewidth, void (* const free_func
  * @param vector The `LucuVector` to deconstruct.
  */
 void lucu_deconstruct_vector(LucuVector vector);
+
+/**
+ * Print the contents of a `LucuVector` to `stdout`.
+ * @param vector `LucuVector` to print.
+ * @param print_function Function used to print elements.
+ * Takes a pointer to the element and `params`.
+ * @param params Passed to `print_function`.
+ */
+void lucu_vector_print(LucuVector vector, void (*print_function)(void*, void*), void* params);
 
 /**
  * Tests if a `LucuVector` is empty.
@@ -136,6 +146,14 @@ void lucu_vector_enqueue(LucuVector vector, const void* const data);
  * Useful when using a `LucuVector` as a queue.
  */
 void* lucu_vector_dequeue(LucuVector vector);
+
+/**
+ * Swap the elements of `vector` at `index_1` and `index_2`.
+ * @param vector `LucuVector` to modify.
+ * @param index_1 One of the indexes to swap.
+ * @param index_2 The other index to swap.
+ */
+void lucu_vector_swap(LucuVector vector, const int index_1, const int index_2);
 
 /**
  * Gets the index of an element in a `LucuVector`.
@@ -230,5 +248,18 @@ LucuVector lucu_vector_map(LucuVector vector, size_t target_bytewidth, void (* c
  * @param params Passed to compare_function.
  */
 void* lucu_vector_min_max(LucuVector vector, bool (* const compare_function)(void*, void*, void*), void* const params);
+
+/**
+ * Sorts a `LucuVector`.
+ *
+ * Modifies `vector` so that it is sorted.
+ * Takes *O(n log(n))* time and *O(n)* extra space.
+ * @param vector `LucuVector` to sort.
+ * @param compare_function Function used to compare two elements.
+ * Takes a pointer to each element and `params`. Returns `true` if
+ * the first element should be sorted before the second element and
+ * `false` if the second element should be sorted before the first element.
+ */
+void lucu_vector_sort(LucuVector vector, bool (*compare_function)(void*, void*, void*), void* params);
 
 #endif

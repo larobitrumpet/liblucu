@@ -1,5 +1,6 @@
 #include "../include/vector.h"
 #include <criterion/criterion.h>
+#include <criterion/internal/assert.h>
 
 Test(vector, push_back) {
 	LucuVector v = lucu_construct_vector(sizeof(int), NULL);
@@ -179,6 +180,10 @@ Test(vector, pop_front) {
 	free(third_pop);
 
 	lucu_deconstruct_vector(v);
+}
+
+Test(vector, print) {
+
 }
 
 bool int_equal(void* a, void* b, void* p) {
@@ -463,6 +468,41 @@ Test(vector, min_max) {
 
 	cr_expect(*(int*)lucu_vector_min_max(v, min, NULL) == -6);
 	cr_expect(*(int*)lucu_vector_min_max(v, max, NULL) == 8);
+
+	lucu_deconstruct_vector(v);
+}
+
+Test(vector, sort) {
+	LucuVector v = lucu_construct_vector(sizeof(int), NULL);
+
+	int a = 1;
+	int b = 2;
+	int c = 3;
+	int d = 4;
+	int e = 5;
+	int f = 6;
+	int g = 7;
+	int h = 8;
+
+	lucu_vector_push(v, &a);
+	lucu_vector_push(v, &f);
+	lucu_vector_push(v, &b);
+	lucu_vector_push(v, &h);
+	lucu_vector_push(v, &e);
+	lucu_vector_push(v, &d);
+	lucu_vector_push(v, &g);
+	lucu_vector_push(v, &c);
+
+	lucu_vector_sort(v, min, NULL);
+
+	cr_expect(*(int*)lucu_vector_get(v, 0) == 1);
+	cr_expect(*(int*)lucu_vector_get(v, 1) == 2);
+	cr_expect(*(int*)lucu_vector_get(v, 2) == 3);
+	cr_expect(*(int*)lucu_vector_get(v, 3) == 4);
+	cr_expect(*(int*)lucu_vector_get(v, 4) == 5);
+	cr_expect(*(int*)lucu_vector_get(v, 5) == 6);
+	cr_expect(*(int*)lucu_vector_get(v, 6) == 7);
+	cr_expect(*(int*)lucu_vector_get(v, 7) == 8);
 
 	lucu_deconstruct_vector(v);
 }
