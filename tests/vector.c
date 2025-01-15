@@ -1,4 +1,4 @@
-#include "../include/vector.h"
+#include "lucu/vector.h"
 #include <criterion/criterion.h>
 #include <criterion/internal/assert.h>
 

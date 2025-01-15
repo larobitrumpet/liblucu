@@ -1,4 +1,4 @@
-#include "../include/vector.h"
+#include "lucu/vector.h"
 
 static inline int mod(const int a, const int b) {
 	return ((a % b) + b) % b;
