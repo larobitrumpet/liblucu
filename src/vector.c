@@ -1,4 +1,9 @@
+#include "lucu/lucu.h"
 #include "lucu/vector.h"
+#include <stdint.h>
+#include <string.h>
+#include <assert.h>
+#include <stdio.h>
 
 static inline int mod(const int a, const int b) {
 	return ((a % b) + b) % b;

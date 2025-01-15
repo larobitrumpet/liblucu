@@ -2,13 +2,8 @@
 #ifndef LUCU_VECTOR_H
 #define LUCU_VECTOR_H
 
-#include "lucu/lucu.h"
 #include <stdlib.h>
-#include <stdint.h>
 #include <stdbool.h>
-#include <string.h>
-#include <assert.h>
-#include <stdio.h>
 
 /**
  * Initial size of the vector.
