@@ -65,8 +65,8 @@ jobs:
         git checkout v2.4.2
         python3 ../meson-1.6.1/meson.py setup build
         cd build
-        python3 ../meson-1.6.1/meson.py compile
-        sudo python3 ../meson-1.6.1/meson.py install
+        python3 ../../meson-1.6.1/meson.py compile
+        sudo python3 ../../meson-1.6.1/meson.py install
         sudo ldconfig
 
     - name: Set reusable strings
