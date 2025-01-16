@@ -68,6 +68,7 @@ jobs:
         python3 ../meson-1.6.1/meson.py setup build
         cd build
         python3 ../../meson-1.6.1/meson.py compile
+        echo "Completed build! Yippee!!"
         sudo python3 ../../meson-1.6.1/meson.py install
         sudo ldconfig
 
