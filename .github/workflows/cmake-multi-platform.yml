@@ -69,7 +69,7 @@ jobs:
         cd build
         python3 ../../meson-1.6.1/meson.py compile
         echo "Completed build! Yippee!!"
-        sudo -E python3 ../../meson-1.6.1/meson.py install
+        sudo env PATH=$PATH python3 ../../meson-1.6.1/meson.py install
         sudo ldconfig
 
     - name: Set reusable strings
