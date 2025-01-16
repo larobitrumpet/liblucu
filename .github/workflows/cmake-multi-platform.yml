@@ -65,7 +65,7 @@ jobs:
         export PATH="${HOME}/.local/bin${PATH:+:${PATH}}"
         echo $PATH
         ls "${HOME}/.local/bin"
-        python3 show meson
+        pip show meson
         sudo /home/runner/.local/bin/meson install -C build
         sudo ldconfig
 
