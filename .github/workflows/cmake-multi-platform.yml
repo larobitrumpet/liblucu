@@ -72,16 +72,15 @@ jobs:
     - name: Install Criterion
       if: ${{ steps.cachecriterion.outputs.cache-hit != 'true' }}
       run: |
-        wget https://github.com/mesonbuild/meson/releases/download/1.6.1/meson-1.6.1.tar.gz
-        tar xfvz meson-1.6.1.tar.gz
-        git clone https://github.com/Snaipe/Criterion.git
+        pip install meson
         pip install ninja
+        git clone https://github.com/Snaipe/Criterion.git
         cd Criterion
         git checkout v2.4.2
-        python3 ../meson-1.6.1/meson.py setup build
+        meson setup build
         cd build
-        python3 ../../meson-1.6.1/meson.py compile
-        sudo env PATH=$PATH python3 ../../meson-1.6.1/meson.py install
+        meson compile
+        sudo env PATH=$PATH mason install
         sudo ldconfig
 
     - name: Set reusable strings
