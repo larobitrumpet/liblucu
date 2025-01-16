@@ -28,12 +28,34 @@ typedef LucuVectorInstance* LucuVector;
 LucuVector lucu_construct_vector(const size_t bytewidth, void (* const free_function)(void*));
 
 /**
+ * Create a `LucuVector` with a specified allocated size
+ *
+ * Creates a `LucuVector` so that it can hold `length` elements
+ * without needing to reallocate.
+ * @param length Number of elements to allocate memory for.
+ * @param bytewidth The number of bytes that an element takes up.
+ * @param free_function Function used to free elements (see `lucu_construct_vector`).
+ */
+LucuVector lucu_vector_new_with_size(const int length, const size_t bytewidth, void (*free_function)(void*));
+
+/**
  * Deconstructs a `LucuVector`.
  *
  * Frees the memory allocated to a `LucuVector` and optionally it's elements.
  * @param vector The `LucuVector` to deconstruct.
  */
 void lucu_deconstruct_vector(LucuVector vector);
+
+/**
+ * Creates a new `LucuVector` from an existing array.
+ *
+ * Copies the elements of `arr` into a new `LucuVector`.
+ * @param arr Array to create `LucuVector` from.
+ * @param length The number of elements in `arr`. **Must** be >= 1.
+ * @param bytewidth The number of bytes that an element takes up.
+ * @param free_function Function used to free elements (see `lucu_construct_vector`)
+ */
+LucuVector lucu_vector_from_array(const void* arr, const int length, const size_t bytewidth, void (*free_function)(void*));
 
 /**
  * Print the contents of a `LucuVector` to `stdout`.

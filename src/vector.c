@@ -43,10 +43,16 @@ struct LucuVectorInstance {
 };
 
 LucuVector lucu_construct_vector(const size_t bytewidth, void (* const free_function)(void*)) {
+	return lucu_vector_new_with_size(LUCU_VECTOR_INIT_SIZE, bytewidth, free_function);
+}
+
+LucuVector lucu_vector_new_with_size(const int length, const size_t bytewidth, void (* const free_function)(void*)) {
+	int len = length == 0 ? LUCU_VECTOR_INIT_SIZE : length;
+
 	LucuVector vector = malloc(sizeof(LucuVectorInstance));
 	vector->bytewidth = bytewidth;
-	vector->size = LUCU_VECTOR_INIT_SIZE;
-	vector->v = malloc(bytewidth * LUCU_VECTOR_INIT_SIZE);
+	vector->size = len;
+	vector->v = malloc(bytewidth * (size_t)len);
 	vector->head = 0;
 	vector->tail = 0;
 	vector->free_function = free_function;
@@ -65,6 +71,13 @@ void lucu_deconstruct_vector(LucuVector vector) {
 		lucu_vector_iterate(vector, lucu_deconstruct_vector_func, (void*)&ff);
 	}
 	free(vector->v);
+}
+
+LucuVector lucu_vector_from_array(const void* const arr, const int length, const size_t bytewidth, void (* const free_function)(void*)) {
+	assert(length > 0);
+	LucuVector vector = lucu_vector_new_with_size(length, bytewidth, free_function);
+	memcpy(vector->v, arr, (size_t)length * bytewidth);
+	return vector;
 }
 
 static bool lucu_vector_print_func(void* const data, void* params) {
