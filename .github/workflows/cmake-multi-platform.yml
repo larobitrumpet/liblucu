@@ -62,6 +62,7 @@ jobs:
         python3 -m pip install ninja
         git clone https://github.com/Snaipe/Criterion.git
         cd Criterion
+        export PATH="${HOME}/.local/bin${PATH:+:${PATH}}"
         sudo meson install -C build
         sudo ldconfig
 
