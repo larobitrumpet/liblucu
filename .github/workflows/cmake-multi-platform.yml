@@ -57,16 +57,12 @@ jobs:
 
     - name: Install Criterion
       run: |
-        python3 -m pip install --upgrade pip
-        python3 -m pip install meson
-        python3 -m pip install ninja
+        sudo python3 -m pip install --upgrade pip
+        sudo python3 -m pip install meson
+        sudo python3 -m pip install ninja
         git clone https://github.com/Snaipe/Criterion.git
         cd Criterion
-        export PATH="${HOME}/.local/bin${PATH:+:${PATH}}"
-        echo $PATH
-        ls "${HOME}/.local/bin"
-        pip show meson
-        sudo /home/runner/.local/bin/meson install -C build
+        sudo meson install -C build
         sudo ldconfig
 
     - name: Set reusable strings
