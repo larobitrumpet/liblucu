@@ -63,6 +63,8 @@ jobs:
         git clone https://github.com/Snaipe/Criterion.git
         cd Criterion
         export PATH="${HOME}/.local/bin${PATH:+:${PATH}}"
+        echo $PATH
+        ls "${HOME}/.local/bin"
         sudo meson install -C build
         sudo ldconfig
 
