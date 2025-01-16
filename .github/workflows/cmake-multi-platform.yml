@@ -47,11 +47,13 @@ jobs:
     steps:
     - name: Install GCC
       uses: egor-tensin/setup-gcc@v1.3
+      if: matrix.c_compiler == gcc
       with:
         version: 14
 
     - name: Set up Clang
       uses: egor-tensin/setup-clang@v1
+      if: matrix.c_compiler == clang
       with:
         version: 19
 
