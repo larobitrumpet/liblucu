@@ -60,7 +60,9 @@ jobs:
         wget https://github.com/mesonbuild/meson/releases/download/1.6.1/meson-1.6.1.tar.gz
         tar xfvz meson-1.6.1.tar.gz
         git clone https://github.com/Snaipe/Criterion.git
+        pwd
         cd Criterion
+        pwd
         sudo python3 ../meson-1.6.1/meson.py install -C build
         sudo ldconfig
 
