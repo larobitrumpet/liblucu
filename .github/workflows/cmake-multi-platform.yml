@@ -57,7 +57,6 @@ jobs:
 
     - name: Install Criterion
       run: |
-        sudo python3 -m pip install --upgrade pip
         sudo python3 -m pip install meson
         sudo python3 -m pip install ninja
         git clone https://github.com/Snaipe/Criterion.git
