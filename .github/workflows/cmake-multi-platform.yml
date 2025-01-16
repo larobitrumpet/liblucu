@@ -61,6 +61,7 @@ jobs:
         tar xfvz meson-1.6.1.tar.gz
         git clone https://github.com/Snaipe/Criterion.git
         pip install ninja
+        ls /home/runner/.local/bin/
         cd Criterion
         git checkout v2.4.2
         python3 ../meson-1.6.1/meson.py setup build
