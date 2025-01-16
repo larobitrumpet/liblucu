@@ -54,7 +54,13 @@ jobs:
       env:
         cache-name: cache-criterion
       with:
-        path: /usr/include/criterion
+        path: |
+          /usr/local/lib/x86_64-linux-gnu/libcriterion.so.3.2.0
+          /usr/local/lib/x86_64-linux-gnu/libcriterion.so.3
+          /usr/local/lib/x86_64-linux-gnu/libcriterion.so
+          /usr/local/lib/x86_64-linux-gnu/libcriterion.a
+          /usr/local/lib/x86_64-linux-gnu/pkgconfig/criterion.pc
+          /usr/local/include/criterion/
         key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
 
     - name: Set up Python
@@ -77,7 +83,6 @@ jobs:
         python3 ../../meson-1.6.1/meson.py compile
         sudo env PATH=$PATH python3 ../../meson-1.6.1/meson.py install
         sudo ldconfig
-        whereis criterion
 
     - name: Set reusable strings
       # Turn repeated input strings (such as the build output directory) into step outputs. These step outputs can be used throughout the workflow file.
