@@ -53,7 +53,8 @@ jobs:
       uses: actions/cache@v3
       env:
         cache-name: cache-criterion
-        with: /usr/include/criterion
+      with:
+        path: /usr/include/criterion
         key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
 
     - name: Set up Python
