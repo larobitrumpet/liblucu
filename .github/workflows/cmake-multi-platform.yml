@@ -55,14 +55,11 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v4
 
-    - name: Install Meson
+    - name: Install Criterion
       run: |
         python3 -m pip install --upgrade pip
         python3 -m pip install meson
         python3 -m pip install ninja
-
-    - name: Install Criterion
-      run: |
         git clone https://github.com/Snaipe/Criterion.git
         cd Criterion
         sudo meson install -C build
