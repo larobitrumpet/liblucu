@@ -61,14 +61,11 @@ jobs:
         tar xfvz meson-1.6.1.tar.gz
         git clone https://github.com/Snaipe/Criterion.git
         pip install ninja
-        ls /home/runner/.local/bin/
-        export PATH="/home/runner/.local/bin${PATH:+:${PATH}}"
         cd Criterion
         git checkout v2.4.2
         python3 ../meson-1.6.1/meson.py setup build
         cd build
         python3 ../../meson-1.6.1/meson.py compile
-        echo "Completed build! Yippee!!"
         sudo env PATH=$PATH python3 ../../meson-1.6.1/meson.py install
         sudo ldconfig
 
