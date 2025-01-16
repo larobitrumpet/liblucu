@@ -57,11 +57,11 @@ jobs:
 
     - name: Install Criterion
       run: |
-        sudo python3 -m pip install meson
-        sudo python3 -m pip install ninja
+        wget https://github.com/mesonbuild/meson/releases/download/1.6.1/meson-1.6.1.tar.gz
+        tar xfvz meson-1.6.1.tar.gz
         git clone https://github.com/Snaipe/Criterion.git
         cd Criterion
-        sudo meson install -C build
+        sudo python3 ../meson-1.6.1/meson.py install -C build
         sudo ldconfig
 
     - name: Set reusable strings
