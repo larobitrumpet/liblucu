@@ -24,8 +24,6 @@ jobs:
       # To add more build types (Release, Debug, RelWithDebInfo, etc.) customize the build_type list.
       matrix:
         os: [ubuntu-latest, windows-latest]
-        gcc: [14]
-        clang: [19]
         build_type: [Release]
         c_compiler: [gcc, clang, cl]
         include:
@@ -47,10 +45,12 @@ jobs:
             c_compiler: cl
 
     steps:
-    - uses: actions/checkout@v4
+    - name: Install GCC
+      uses: egor-tensin/setup-gcc@v1.3
       with:
-        gcc-version: ${{ matrix.gcc }}
-        clang-version: ${{ matrix.clang }}
+        version: latest
+
+    - uses: actions/checkout@v4
 
     - name: Set reusable strings
       # Turn repeated input strings (such as the build output directory) into step outputs. These step outputs can be used throughout the workflow file.
