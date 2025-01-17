@@ -80,7 +80,7 @@ jobs:
         meson setup build
         cd build
         meson compile
-        sudo env PATH=$PATH meson install
+        meson install
 
     - name: Set reusable strings
       # Turn repeated input strings (such as the build output directory) into step outputs. These step outputs can be used throughout the workflow file.
