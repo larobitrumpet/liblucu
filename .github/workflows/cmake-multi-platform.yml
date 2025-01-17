@@ -81,6 +81,7 @@ jobs:
         cd build
         meson compile
         meson install
+        echo $INCLUDE
 
     - name: Set reusable strings
       # Turn repeated input strings (such as the build output directory) into step outputs. These step outputs can be used throughout the workflow file.
