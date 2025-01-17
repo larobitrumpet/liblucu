@@ -23,9 +23,9 @@ jobs:
       #
       # To add more build types (Release, Debug, RelWithDebInfo, etc.) customize the build_type list.
       matrix:
-        os: [ubuntu-latest]
+        os: [ubuntu-latest, windows-latest]
         build_type: [Release]
-        c_compiler: [gcc, clang]
+        c_compiler: [gcc, clang, cl]
         include:
           - os: ubuntu-latest
             c_compiler: gcc
@@ -33,6 +33,16 @@ jobs:
           - os: ubuntu-latest
             c_compiler: clang
             cpp_compiler: clang++
+          - os: windows-latest
+            c_compiler: cl
+            cpp_compiler: cl
+        exclude:
+          - os: ubuntu-latest
+            c_compiler: cl
+          - os: windows-latest
+            c_compiler: gcc
+          - os: windows-latest
+            c_compiler: clang
 
     steps:
     - name: Install GCC
@@ -50,7 +60,26 @@ jobs:
     - uses: actions/checkout@v4
 
     - name: Install Criterion Ubuntu/Debian
+      if: matrix.os == 'ubuntu-latest'
       run: sudo apt-get install libcriterion-dev
+
+    - name: Set up Python
+      if: matrix.os == 'windows-latest'
+      uses: actions/setup-python@v4
+      with:
+        python-version: 3.13
+
+    - name: Install Criterion
+      if: matrix.os == 'windows-latest'
+      run: |
+        pip install meson
+        pip install ninja
+        cd Criterion
+        git checkout v2.4.2
+        meson setup build
+        cd build
+        meson compile
+        sudo env PATH=$PATH meson install
 
     - name: Set reusable strings
       # Turn repeated input strings (such as the build output directory) into step outputs. These step outputs can be used throughout the workflow file.
