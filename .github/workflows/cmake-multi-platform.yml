@@ -69,11 +69,12 @@ jobs:
       with:
         python-version: 3.13
 
-    - name: Install Criterion
+    - name: Install Criterion Windows
       if: matrix.os == 'windows-latest'
       run: |
         pip install meson
         pip install ninja
+        git clone https://github.com/Snaipe/Criterion.git
         cd Criterion
         git checkout v2.4.2
         meson setup build
