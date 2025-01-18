@@ -84,7 +84,7 @@ jobs:
         meson setup build
         cd build
         meson compile
-        meson install --destdir C:/ProgramData/
+        meson install --destdir C:/ProgramData/criterion/
         echo $INCLUDE
 
     - name: Set reusable strings
