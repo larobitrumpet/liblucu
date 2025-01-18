@@ -1,0 +1,4 @@
+set(DOXYGEN_JAVADOC_AUTOBRIEF YES)
+set(DOXYGEN_OPTIMIZE_OUTPUT_FOR_C YES)
+
+doxygen_add_docs(docs "${PROJECT_SOURCE_DIR}/include")
