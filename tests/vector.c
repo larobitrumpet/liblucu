@@ -518,3 +518,55 @@ Test(vector, sort) {
 
 	lucu_vector_destroy(v);
 }
+
+Test(vector, to_array) {
+	LucuVector v = lucu_vector_new(sizeof(int), NULL);
+
+	for (int i = 0; i < 6; i++) {
+		lucu_vector_push(v, &i);
+	}
+
+	size_t size;
+	int* arr = lucu_vector_to_array(v, &size);
+
+	cr_assert(size == sizeof(int) * 6);
+
+	const int ref_arr[] = {0, 1, 2, 3, 4, 5};
+
+	for (int i = 0; i < 6; i++) {
+		cr_expect(arr[i] == ref_arr[i]);
+	}
+
+	free(arr);
+	lucu_vector_destroy(v);
+}
+
+Test(vector, broken_array) {
+	LucuVector v = lucu_vector_new_with_size(6, sizeof(int), NULL);
+
+	for (int i = 0; i < 4; i++) {
+		lucu_vector_push(v, &i);
+	}
+
+	lucu_vector_remove(v, 0);
+	lucu_vector_remove(v, 0);
+	lucu_vector_remove(v, 0);
+
+	for (int i = 4; i < 8; i++) {
+		lucu_vector_push(v, &i);
+	}
+
+	size_t size;
+	int* arr = lucu_vector_to_array(v, &size);
+
+	cr_assert(size == sizeof(int) * 5);
+
+	const int ref_arr[] = {3, 4, 5, 6, 7};
+
+	for (int i = 0; i < 5; i++) {
+		cr_expect(arr[i] == ref_arr[i]);
+	}
+
+	free(arr);
+	lucu_vector_destroy(v);
+}

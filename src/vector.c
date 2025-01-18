@@ -42,6 +42,9 @@ struct LucuVectorData {
 	void (*free_function)(void*);
 };
 
+static void lucu_vector_increase_size(LucuVector vector);
+static int lucu_vector_local_index_to_global_index(LucuVector vector, const int index);
+
 LucuVector lucu_vector_new(const size_t bytewidth, void (* const free_function)(void*)) {
 	return lucu_vector_new_with_size(LUCU_VECTOR_INIT_SIZE, bytewidth, free_function);
 }
@@ -78,6 +81,33 @@ LucuVector lucu_vector_from_array(const void* const arr, const int length, const
 	LucuVector vector = lucu_vector_new_with_size(length, bytewidth, free_function);
 	memcpy(vector->v, arr, (size_t)length * bytewidth);
 	return vector;
+}
+
+void* lucu_vector_to_array(LucuVector vector, size_t* size) {
+	if (lucu_vector_is_empty(vector)) {
+		if (size != NULL) {
+			*size = 0;
+		}
+		return NULL;
+	}
+
+	size_t s = vector->bytewidth * (size_t)lucu_vector_length(vector);
+	if (size != NULL) {
+		*size = s;
+	}
+	void* arr = malloc(s);
+
+	const int start = lucu_vector_local_index_to_global_index(vector, 0);
+	const int end = lucu_vector_local_index_to_global_index(vector, lucu_vector_length(vector));
+
+	if (end >= start) {
+		memcpy(arr, (void*)((uintptr_t)vector->v + (size_t)start * vector->bytewidth), vector->bytewidth * (size_t)lucu_vector_length(vector));
+	} else {
+		memcpy(arr, (void*)((uintptr_t)vector->v + (size_t)start * vector->bytewidth), vector->bytewidth * (size_t)(vector->size - start));
+		memcpy((void*)((uintptr_t)arr + vector->bytewidth * (size_t)(vector->size - start)), vector->v, vector->bytewidth * (size_t)(lucu_vector_length(vector) - (vector->size - start)));
+	}
+
+	return arr;
 }
 
 static bool lucu_vector_print_func(void* const data, void* params) {

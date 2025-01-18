@@ -58,6 +58,18 @@ void lucu_vector_destroy(LucuVector vector);
 LucuVector lucu_vector_from_array(const void* arr, const int length, const size_t bytewidth, void (*free_function)(void*));
 
 /**
+ * Creates an array from a `LucuVector`.
+ *
+ * Copies the content of a `LucuVector` into an array.
+ * @param[in] vector The `LucuVector` to convert to an array.
+ * @param[out] size The number of bytes that the returned array contains.
+ * @return Array of elements copied from `vector`.
+ * Returns `NULL` if `vector` is empty.
+ * This array is created by `malloc` and must be freed by the user.
+ */
+void* lucu_vector_to_array(LucuVector vector, size_t* size);
+
+/**
  * Print the contents of a `LucuVector` to `stdout`.
  * @param vector `LucuVector` to print.
  * @param print_function Function used to print elements.
