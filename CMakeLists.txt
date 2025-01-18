@@ -28,7 +28,3 @@ if ((CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME OR LIBLUCU_BUILD_TESTING) AND BUIL
 	find_package(Criterion REQUIRED)
 	add_subdirectory(tests)
 endif()
-
-if (CMAKE_BUILD_TYPE STREQUAL "Debug")
-	add_compile_options(-std=c23 -Wall -Wextra -Werror -pedantic -pedantic-errors -Wfloat-equal -Wundef -Wshadow -Wstrict-overflow=5 -Wcast-qual -Wswitch-default -Wswitch-enum -Wconversion -Wformat=2 -Wformat-nonliteral -Wformat-signedness -Wmissing-include-dirs)
-endif()
