@@ -5,16 +5,16 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
-typedef struct LucuVectorInstance LucuVectorInstance;
+typedef struct LucuVectorData LucuVectorData;
 /**
  * A dynamically sized circular array.
  *
  * A list that stores generic values.
  */
-typedef LucuVectorInstance* LucuVector;
+typedef LucuVectorData* LucuVector;
 
 /**
- * Construct a new `LucuVector`.
+ * Create a new `LucuVector`.
  *
  * Creates a new `LucuVector`.
  * Create new `LucuVector`'s using **only** this function.
@@ -25,7 +25,7 @@ typedef LucuVectorInstance* LucuVector;
  * Takes a `void*` pointing to the element to be freed.
  * @return A new `LucuVector`
  */
-LucuVector lucu_construct_vector(const size_t bytewidth, void (* const free_function)(void*));
+LucuVector lucu_vector_new(const size_t bytewidth, void (* const free_function)(void*));
 
 /**
  * Create a `LucuVector` with a specified allocated size
@@ -34,7 +34,7 @@ LucuVector lucu_construct_vector(const size_t bytewidth, void (* const free_func
  * without needing to reallocate.
  * @param length Number of elements to allocate memory for.
  * @param bytewidth The number of bytes that an element takes up.
- * @param free_function Function used to free elements (see `lucu_construct_vector`).
+ * @param free_function Function used to free elements (see `lucu_vector_new`).
  */
 LucuVector lucu_vector_new_with_size(const int length, const size_t bytewidth, void (*free_function)(void*));
 
@@ -44,7 +44,7 @@ LucuVector lucu_vector_new_with_size(const int length, const size_t bytewidth, v
  * Frees the memory allocated to a `LucuVector` and optionally it's elements.
  * @param vector The `LucuVector` to deconstruct.
  */
-void lucu_deconstruct_vector(LucuVector vector);
+void lucu_vector_destroy(LucuVector vector);
 
 /**
  * Creates a new `LucuVector` from an existing array.
@@ -53,7 +53,7 @@ void lucu_deconstruct_vector(LucuVector vector);
  * @param arr Array to create `LucuVector` from.
  * @param length The number of elements in `arr`. **Must** be >= 1.
  * @param bytewidth The number of bytes that an element takes up.
- * @param free_function Function used to free elements (see `lucu_construct_vector`)
+ * @param free_function Function used to free elements (see `lucu_vector_new`)
  */
 LucuVector lucu_vector_from_array(const void* arr, const int length, const size_t bytewidth, void (*free_function)(void*));
 

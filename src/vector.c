@@ -24,7 +24,7 @@ static inline int mod(const int a, const int b) {
 	return ((a % b) + b) % b;
 }
 
-struct LucuVectorInstance {
+struct LucuVectorData {
 	/// Array where elements are stored
 	void* v;
 	/// The number of bytes that an element takes up
@@ -38,18 +38,18 @@ struct LucuVectorInstance {
 	/// The index of the last element of the circular array plus 1 mod `size`.
 	int tail;
 	/// Function used to free elements of the `LucuVector`.
-	/// See `lucu_construct_vector` for more information
+	/// See `lucu_vector_new` for more information
 	void (*free_function)(void*);
 };
 
-LucuVector lucu_construct_vector(const size_t bytewidth, void (* const free_function)(void*)) {
+LucuVector lucu_vector_new(const size_t bytewidth, void (* const free_function)(void*)) {
 	return lucu_vector_new_with_size(LUCU_VECTOR_INIT_SIZE, bytewidth, free_function);
 }
 
 LucuVector lucu_vector_new_with_size(const int length, const size_t bytewidth, void (* const free_function)(void*)) {
 	int len = length == 0 ? LUCU_VECTOR_INIT_SIZE : length;
 
-	LucuVector vector = malloc(sizeof(LucuVectorInstance));
+	LucuVector vector = malloc(sizeof(LucuVectorData));
 	vector->bytewidth = bytewidth;
 	vector->size = len;
 	vector->v = malloc(bytewidth * (size_t)len);
@@ -59,16 +59,16 @@ LucuVector lucu_vector_new_with_size(const int length, const size_t bytewidth, v
 	return vector;
 }
 
-static bool lucu_deconstruct_vector_func(void* const data, void* params) {
+static bool lucu_vector_destroy_func(void* const data, void* params) {
 	void (*free_function)(void*) = (void (*)(void*))((LucuGenericFunction*)params)->f;
 	free_function(data);
 	return false;
 }
 
-void lucu_deconstruct_vector(LucuVector vector) {
+void lucu_vector_destroy(LucuVector vector) {
 	if (vector->free_function != NULL) {
 		LucuGenericFunction ff = { (void (*)(void))vector->free_function };
-		lucu_vector_iterate(vector, lucu_deconstruct_vector_func, (void*)&ff);
+		lucu_vector_iterate(vector, lucu_vector_destroy_func, (void*)&ff);
 	}
 	free(vector->v);
 }
@@ -274,7 +274,7 @@ static bool lucu_vector_filter_func(void* const data, void* const params) {
 }
 
 LucuVector lucu_vector_filter(LucuVector vector, bool (* const filter_func)(void*, void*), void* const params) {
-	LucuVector new_vector = lucu_construct_vector(vector->bytewidth, vector->free_function);
+	LucuVector new_vector = lucu_vector_new(vector->bytewidth, vector->free_function);
 	LucuGenericFunction ff = { (void (*)(void))filter_func };
 	void* pars[] = {(void*)new_vector, (void*)&ff, params};
 	lucu_vector_iterate(vector, lucu_vector_filter_func, (void*)pars);
@@ -291,7 +291,7 @@ static bool lucu_vector_map_func(void* const data, void* const params) {
 }
 
 LucuVector lucu_vector_map(LucuVector vector, const size_t target_bytewidth, void (* const target_free_function)(void*), void* (* const map_func)(void*, void*), void* const params) {
-	LucuVector new_vector = lucu_construct_vector(target_bytewidth, target_free_function);
+	LucuVector new_vector = lucu_vector_new(target_bytewidth, target_free_function);
 	LucuGenericFunction mf = { (void (*)(void))map_func };
 	void* pars[] = {(void*)new_vector, (void*)&mf, params};
 	lucu_vector_iterate(vector, lucu_vector_map_func, (void*)pars);
@@ -317,7 +317,7 @@ void* lucu_vector_min_max(LucuVector vector, bool (* const compare_func)(void*, 
 }
 
 void merge(LucuVector vector, const int start, const int middle, const int end, bool (*compare_function)(void*, void*, void*), void* params) {
-	LucuVector merged = lucu_construct_vector(vector->bytewidth, vector->free_function);
+	LucuVector merged = lucu_vector_new(vector->bytewidth, vector->free_function);
 
 	int i = start;
 	int j = middle;
@@ -352,7 +352,7 @@ void merge(LucuVector vector, const int start, const int middle, const int end, 
 		memcpy(vector->v, (void*)((uintptr_t)merged->v + (size_t)(vector->size - local_head)), vector->bytewidth * (size_t)(lucu_vector_length(merged) - (vector->size - local_head)));
 	}
 
-	lucu_deconstruct_vector(merged);
+	lucu_vector_destroy(merged);
 }
 
 void merge_sort(LucuVector vector, const int start, const int end, bool (*compare_function)(void*, void*, void*), void* params) {

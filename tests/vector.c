@@ -11,11 +11,11 @@ Test(vector, from_array) {
 		cr_expect(*(int*)lucu_vector_get(v, i) == i);
 	}
 
-	lucu_deconstruct_vector(v);
+	lucu_vector_destroy(v);
 }
 
 Test(vector, push_back) {
-	LucuVector v = lucu_construct_vector(sizeof(int), NULL);
+	LucuVector v = lucu_vector_new(sizeof(int), NULL);
 	cr_assert(lucu_vector_is_empty(v) == true);
 	cr_assert(lucu_vector_length(v) == 0);
 
@@ -46,11 +46,11 @@ Test(vector, push_back) {
 	cr_expect((int*)lucu_vector_get(v, 1) != &second);
 	cr_expect((int*)lucu_vector_get(v, 2) != &third);
 
-	lucu_deconstruct_vector(v);
+	lucu_vector_destroy(v);
 }
 
 Test(vector, push_front) {
-	LucuVector v = lucu_construct_vector(sizeof(int), NULL);
+	LucuVector v = lucu_vector_new(sizeof(int), NULL);
 	cr_assert(lucu_vector_is_empty(v) == true);
 	cr_assert(lucu_vector_length(v) == 0);
 
@@ -81,11 +81,11 @@ Test(vector, push_front) {
 	cr_expect((int*)lucu_vector_get(v, 1) != &second);
 	cr_expect((int*)lucu_vector_get(v, 2) != &first);
 
-	lucu_deconstruct_vector(v);
+	lucu_vector_destroy(v);
 }
 
 Test(vector, pop_back) {
-	LucuVector v = lucu_construct_vector(sizeof(int), NULL);
+	LucuVector v = lucu_vector_new(sizeof(int), NULL);
 	cr_assert(lucu_vector_is_empty(v) == true);
 	cr_assert(lucu_vector_length(v) == 0);
 
@@ -136,11 +136,11 @@ Test(vector, pop_back) {
 	free(second_pop);
 	free(third_pop);
 
-	lucu_deconstruct_vector(v);
+	lucu_vector_destroy(v);
 }
 
 Test(vector, pop_front) {
-	LucuVector v = lucu_construct_vector(sizeof(int), NULL);
+	LucuVector v = lucu_vector_new(sizeof(int), NULL);
 	cr_assert(lucu_vector_is_empty(v) == true);
 	cr_assert(lucu_vector_length(v) == 0);
 
@@ -191,7 +191,7 @@ Test(vector, pop_front) {
 	free(second_pop);
 	free(third_pop);
 
-	lucu_deconstruct_vector(v);
+	lucu_vector_destroy(v);
 }
 
 Test(vector, print) {
@@ -204,7 +204,7 @@ bool int_equal(void* a, void* b, void* p) {
 }
 
 Test(vector, find_index) {
-	LucuVector v = lucu_construct_vector(sizeof(int), NULL);
+	LucuVector v = lucu_vector_new(sizeof(int), NULL);
 	cr_assert(lucu_vector_is_empty(v) == true);
 	cr_assert(lucu_vector_length(v) == 0);
 
@@ -279,11 +279,11 @@ Test(vector, find_index) {
 	cr_assert(*(int*)lucu_vector_get(v, 2) == 3);
 	cr_assert(*(int*)lucu_vector_get(v, 3) == 4);
 
-	lucu_deconstruct_vector(v);
+	lucu_vector_destroy(v);
 }
 
 Test(vector, remove) {
-	LucuVector v = lucu_construct_vector(sizeof(int), NULL);
+	LucuVector v = lucu_vector_new(sizeof(int), NULL);
 	for (int i = 1; i < 6; i++) {
 		lucu_vector_push_back(v, &i);
 	}
@@ -316,11 +316,11 @@ Test(vector, remove) {
 	cr_assert(*(int*)lucu_vector_get(v, 0) == 2);
 	cr_assert(*(int*)lucu_vector_get(v, 1) == 4);
 
-	lucu_deconstruct_vector(v);
+	lucu_vector_destroy(v);
 }
 
 Test(vector, insert) {
-	LucuVector v = lucu_construct_vector(sizeof(int), NULL);
+	LucuVector v = lucu_vector_new(sizeof(int), NULL);
 
 	int first = 1;
 	int second = 2;
@@ -363,7 +363,7 @@ Test(vector, insert) {
 	cr_assert(*(int*)lucu_vector_get(v, 3) == 1);
 	cr_assert(*(int*)lucu_vector_get(v, 4) == 5);
 
-	lucu_deconstruct_vector(v);
+	lucu_vector_destroy(v);
 }
 
 bool even(void* n, void* p) {
@@ -372,7 +372,7 @@ bool even(void* n, void* p) {
 }
 
 Test(vector, filter) {
-	LucuVector v = lucu_construct_vector(sizeof(int), NULL);
+	LucuVector v = lucu_vector_new(sizeof(int), NULL);
 	for (int i = 0; i < 24; i++) {
 		lucu_vector_push_back(v, &i);
 	}
@@ -391,8 +391,8 @@ Test(vector, filter) {
 	cr_expect(*(int*)lucu_vector_get(f, 10) == 20);
 	cr_expect(*(int*)lucu_vector_get(f, 11) == 22);
 
-	lucu_deconstruct_vector(v);
-	lucu_deconstruct_vector(f);
+	lucu_vector_destroy(v);
+	lucu_vector_destroy(f);
 }
 
 void* map(void* n, void* p) {
@@ -403,7 +403,7 @@ void* map(void* n, void* p) {
 }
 
 Test(vector, map) {
-	LucuVector v = lucu_construct_vector(sizeof(int), NULL);
+	LucuVector v = lucu_vector_new(sizeof(int), NULL);
 
 	for (int i = 0; i < 26; i++) {
 		lucu_vector_push_back(v, &i);
@@ -443,8 +443,8 @@ Test(vector, map) {
 		cr_assert(*(int*)lucu_vector_get(v, i) == i);
 	}
 
-	lucu_deconstruct_vector(v);
-	lucu_deconstruct_vector(m);
+	lucu_vector_destroy(v);
+	lucu_vector_destroy(m);
 }
 
 bool min(void* a, void* b, void* p) {
@@ -458,7 +458,7 @@ bool max(void* a, void* b, void* p) {
 }
 
 Test(vector, min_max) {
-	LucuVector v = lucu_construct_vector(sizeof(int), NULL);
+	LucuVector v = lucu_vector_new(sizeof(int), NULL);
 
 	int a = 1;
 	int b = 2;
@@ -481,11 +481,11 @@ Test(vector, min_max) {
 	cr_expect(*(int*)lucu_vector_min_max(v, min, NULL) == -6);
 	cr_expect(*(int*)lucu_vector_min_max(v, max, NULL) == 8);
 
-	lucu_deconstruct_vector(v);
+	lucu_vector_destroy(v);
 }
 
 Test(vector, sort) {
-	LucuVector v = lucu_construct_vector(sizeof(int), NULL);
+	LucuVector v = lucu_vector_new(sizeof(int), NULL);
 
 	int a = 1;
 	int b = 2;
@@ -516,5 +516,5 @@ Test(vector, sort) {
 	cr_expect(*(int*)lucu_vector_get(v, 6) == 7);
 	cr_expect(*(int*)lucu_vector_get(v, 7) == 8);
 
-	lucu_deconstruct_vector(v);
+	lucu_vector_destroy(v);
 }
