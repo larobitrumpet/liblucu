@@ -7,6 +7,8 @@ project(
 	LANGUAGES C
 )
 
+list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
+
 if (CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
 	set(CMAKE_C_STANDARD 23)
 	set(CMAKE_EXTENTIONS OFF)
@@ -23,6 +25,7 @@ endif()
 add_subdirectory(src)
 
 if ((CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME OR LIBLUCU_BUILD_TESTING) AND BUILD_TESTING)
+	find_package(Criterion REQUIRED)
 	add_subdirectory(tests)
 endif()
 
