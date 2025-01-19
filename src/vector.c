@@ -43,14 +43,14 @@ struct LucuVectorData {
 };
 
 static void lucu_vector_increase_size(LucuVector vector);
-static int lucu_vector_local_index_to_global_index(LucuVector vector, const int index);
+static int lucu_vector_local_index_to_global_index(const LucuVector vector, const int index);
 
 LucuVector lucu_vector_new(const size_t bytewidth, void (* const free_function)(void*)) {
 	return lucu_vector_new_with_size(LUCU_VECTOR_INIT_SIZE, bytewidth, free_function);
 }
 
 LucuVector lucu_vector_new_with_size(const int length, const size_t bytewidth, void (* const free_function)(void*)) {
-	int len = length == 0 ? LUCU_VECTOR_INIT_SIZE : length;
+	const int len = length == 0 ? LUCU_VECTOR_INIT_SIZE : length;
 
 	LucuVector vector = malloc(sizeof(LucuVectorData));
 	vector->bytewidth = bytewidth;
@@ -83,7 +83,7 @@ LucuVector lucu_vector_from_array(const void* const arr, const int length, const
 	return vector;
 }
 
-void* lucu_vector_to_array(LucuVector vector, size_t* size) {
+void* lucu_vector_to_array(const LucuVector vector, size_t* size) {
 	if (lucu_vector_is_empty(vector)) {
 		if (size != NULL) {
 			*size = 0;
@@ -91,7 +91,7 @@ void* lucu_vector_to_array(LucuVector vector, size_t* size) {
 		return NULL;
 	}
 
-	size_t s = vector->bytewidth * (size_t)lucu_vector_length(vector);
+	const size_t s = vector->bytewidth * (size_t)lucu_vector_length(vector);
 	if (size != NULL) {
 		*size = s;
 	}
@@ -119,7 +119,7 @@ static bool lucu_vector_print_func(void* const data, void* params) {
 	return false;
 }
 
-void lucu_vector_print(LucuVector vector, void (*print_function)(void*, void*), void* params) {
+void lucu_vector_print(LucuVector vector, void (* const print_function)(void*, void*), void* params) {
 	printf("[");
 
 	LucuGenericFunction pf = { (void (*)(void))print_function };
@@ -129,16 +129,16 @@ void lucu_vector_print(LucuVector vector, void (*print_function)(void*, void*), 
 	printf("]");
 }
 
-bool lucu_vector_is_empty(LucuVector vector) {
+bool lucu_vector_is_empty(const LucuVector vector) {
 	return vector->head == vector->tail;
 }
 
-int lucu_vector_length(LucuVector vector) {
+int lucu_vector_length(const LucuVector vector) {
 	return mod(vector->tail - vector->head, vector->size);
 }
 
 static void lucu_vector_increase_size(LucuVector vector) {
-	int old_size = vector->size;
+	const int old_size = vector->size;
 	vector->size = (int)(old_size * LUCU_VECTOR_SIZE_INCREASE);
 	void* new_q = malloc(vector->bytewidth * (size_t)vector->size);
 	int i = vector->head;
@@ -245,11 +245,11 @@ int lucu_vector_index(LucuVector vector, void* const data, bool (* const equal)(
 	}
 }
 
-static int lucu_vector_local_index_to_global_index(LucuVector vector, const int index) {
+static int lucu_vector_local_index_to_global_index(const LucuVector vector, const int index) {
 	return mod(vector->head + index, vector->size);
 }
 
-void* lucu_vector_get(LucuVector vector, const int index) {
+void* lucu_vector_get(const LucuVector vector, const int index) {
 	return (void*)((uintptr_t)vector->v + (size_t)lucu_vector_local_index_to_global_index(vector, index) * vector->bytewidth);
 }
 
