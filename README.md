@@ -37,3 +37,12 @@ Then you can just use your build system to run the tests:
 # in build directory:
 cmake --build . -t test
 ```
+
+## Install
+
+You can also install with CMake:
+
+```sh
+# in build directory
+sudo cmake --install .
+```
