@@ -28,3 +28,6 @@ if ((CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME OR LIBLUCU_BUILD_TESTING) AND BUIL
 	find_package(Criterion REQUIRED)
 	add_subdirectory(tests)
 endif()
+
+export(TARGETS lucu NAMESPACE lucu:: FILE lucuTargets.cmake)
+export(PACKAGE lucu)
