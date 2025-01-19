@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.21...3.31)
 
 project(
 	liblucu
-	VERSION 0.1.0
+	VERSION 1.0.0
 	DESCRIPTION "Lucy's Useful C Utils"
 	LANGUAGES C
 )
