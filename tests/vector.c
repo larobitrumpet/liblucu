@@ -409,7 +409,7 @@ Test(vector, map) {
 		lucu_vector_push_back(v, &i);
 	}
 
-	LucuVector m = lucu_vector_map(v, sizeof(char), NULL, map, NULL);
+	LucuVector m = lucu_vector_map(v, sizeof(char), NULL, map, free, NULL);
 
 	cr_assert(lucu_vector_length(m) == 26);
 	cr_assert(*(char*)lucu_vector_get(m, 0) == 'A');

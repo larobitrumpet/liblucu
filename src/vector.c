@@ -74,6 +74,7 @@ void lucu_vector_destroy(LucuVector vector) {
 		lucu_vector_iterate(vector, lucu_vector_destroy_func, (void*)&ff);
 	}
 	free(vector->v);
+	free(vector);
 }
 
 LucuVector lucu_vector_from_array(const void* const arr, const int length, const size_t bytewidth, void (* const free_function)(void*)) {
@@ -315,15 +316,21 @@ static bool lucu_vector_map_func(void* const data, void* const params) {
 	void** pars = (void**)params;
 	LucuVector vector = (LucuVector)pars[0];
 	void* (*map_func)(void*, void*) = (void* (*)(void*, void*))((LucuGenericFunction*)pars[1])->f;
-	void* par = pars[2];
-	lucu_vector_push_back(vector, map_func(data, par));
+	void* (*map_func_return_free)(void*) = (void* (*)(void*))((LucuGenericFunction*)pars[2])->f;
+	void* par = pars[3];
+	void* mapped = map_func(data, par);
+	lucu_vector_push_back(vector, mapped);
+	if (map_func_return_free != NULL) {
+		map_func_return_free(mapped);
+	}
 	return false;
 }
 
-LucuVector lucu_vector_map(LucuVector vector, const size_t target_bytewidth, void (* const target_free_function)(void*), void* (* const map_func)(void*, void*), void* const params) {
+LucuVector lucu_vector_map(LucuVector vector, const size_t target_bytewidth, void (* const target_free_function)(void*), void* (* const map_func)(void*, void*), void (* const map_func_return_free)(void*), void* const params) {
 	LucuVector new_vector = lucu_vector_new(target_bytewidth, target_free_function);
 	LucuGenericFunction mf = { (void (*)(void))map_func };
-	void* pars[] = {(void*)new_vector, (void*)&mf, params};
+	LucuGenericFunction rf = { (void (*)(void))map_func_return_free };
+	void* pars[] = {(void*)new_vector, (void*)&mf, (void*)&rf, params};
 	lucu_vector_iterate(vector, lucu_vector_map_func, (void*)pars);
 	return new_vector;
 }

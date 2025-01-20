@@ -246,9 +246,11 @@ LucuVector lucu_vector_filter(LucuVector vector, bool (* const filter_function)(
  * @param target_free_function Function used to free mapped to data.
  * @param map_function Function used to map elements.
  * Takes an element from `vector` and `params`.
+ * @param map_func_return_free Function used to free the data returned by `map_function`
+ * after it has been copied into `vector`. Can be `NULL` to not free any data.
  * @param params Passed to `map_function`.
  */
-LucuVector lucu_vector_map(LucuVector vector, size_t target_bytewidth, void (* const target_free_function)(void*), void* (* const map_function)(void*, void*), void* const params);
+LucuVector lucu_vector_map(LucuVector vector, size_t target_bytewidth, void (* const target_free_function)(void*), void* (* const map_function)(void*, void*), void (* const map_func_return_free)(void*), void* const params);
 
 /**
  * Finds the min or max of a `LucuVector`.
