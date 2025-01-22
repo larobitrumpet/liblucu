@@ -23,6 +23,11 @@ LucuOption lucu_option_new_some(void* data, size_t data_size) {
 	return option;
 }
 
+void lucu_option_destroy(LucuOption option) {
+	assert(!lucu_option_is_some(option));
+	free(option);
+}
+
 bool lucu_option_is_some(const LucuOption option) {
 	return option->data != NULL;
 }
