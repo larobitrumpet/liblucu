@@ -29,6 +29,14 @@ LucuOption lucu_option_new_none();
 LucuOption lucu_option_new_some(void* data, size_t data_size);
 
 /**
+ * Destroys a `LucuOption`.
+ * @pre `option` **must** be a `None` (use `lucu_option_take` to take the data out first).
+ * @post `option` will no longer be useable.
+ * @param option The `LucuOption` to destroy.
+ */
+void lucu_option_destroy(LucuOption option);
+
+/**
  * If the `LucuOption` is a `Some`.
  *
  * @param option The `LucuOption` to test.
