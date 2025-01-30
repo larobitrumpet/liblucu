@@ -42,10 +42,6 @@ LucuCache lucu_cache_new(const int cache_size, const size_t key_size, const size
 	cache->keys_equal_function_params = keys_equal_function_params;
 	cache->key_free_function = key_free_function;
 	cache->value_free_function = value_free_function;
-	for (int i = 0; i < cache_size; i++) {
-		LucuOption o = lucu_option_new_none();
-		lucu_vector_push(cache->cache, &o);
-	}
 	return cache;
 }
 
