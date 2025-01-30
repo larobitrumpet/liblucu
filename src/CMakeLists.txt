@@ -1,6 +1,6 @@
 file(GLOB HEADER_LIST CONFIGURE_DEPENDS "${PROJECT_SOURCE_DIR}/include/lucu/*.h")
 
-add_library(lucu vector.c option.c ${HEADER_LIST})
+add_library(lucu vector.c option.c cache.c ${HEADER_LIST})
 target_include_directories(
 	lucu PUBLIC
 	$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
