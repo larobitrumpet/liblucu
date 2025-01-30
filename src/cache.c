@@ -1,6 +1,5 @@
 #include "lucu/cache.h"
 #include "lucu/lucu.h"
-#include "lucu/option.h"
 #include "lucu/vector.h"
 #include <assert.h>
 
