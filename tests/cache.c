@@ -45,126 +45,126 @@ Test(cache, test) {
 	generate_call_test((int[]){0, 0, 0, 0, 0, 0});
 
 	// {0, N, N, N}
-	cr_expect(strcmp(lucu_cache_get(c, &n[0]), "zero"));
+	cr_expect(strcmp(lucu_cache_get(c, &n[0]), "zero") == 0);
 	generate_call_test((int[]){1, 0, 0, 0, 0, 0});
 
-	cr_expect(strcmp(lucu_cache_get(c, &n[0]), "zero"));
+	cr_expect(strcmp(lucu_cache_get(c, &n[0]), "zero") == 0);
 	generate_call_test((int[]){1, 0, 0, 0, 0, 0});
 
 	// {0, 1, N, N}
-	cr_expect(strcmp(lucu_cache_get(c, &n[1]), "one"));
+	cr_expect(strcmp(lucu_cache_get(c, &n[1]), "one") == 0);
 	generate_call_test((int[]){1, 1, 0, 0, 0, 0});
 
-	cr_expect(strcmp(lucu_cache_get(c, &n[1]), "one"));
+	cr_expect(strcmp(lucu_cache_get(c, &n[1]), "one") == 0);
 	generate_call_test((int[]){1, 1, 0, 0, 0, 0});
 
-	cr_expect(strcmp(lucu_cache_get(c, &n[0]), "zero"));
+	cr_expect(strcmp(lucu_cache_get(c, &n[0]), "zero") == 0);
 	generate_call_test((int[]){1, 1, 0, 0, 0, 0});
 
-	cr_expect(strcmp(lucu_cache_get(c, &n[1]), "one"));
+	cr_expect(strcmp(lucu_cache_get(c, &n[1]), "one") == 0);
 	generate_call_test((int[]){1, 1, 0, 0, 0, 0});
 
 	// {0, 1, 2, N}
-	cr_expect(strcmp(lucu_cache_get(c, &n[2]), "two"));
+	cr_expect(strcmp(lucu_cache_get(c, &n[2]), "two") == 0);
 	generate_call_test((int[]){1, 1, 1, 0, 0, 0});
 
-	cr_expect(strcmp(lucu_cache_get(c, &n[2]), "two"));
+	cr_expect(strcmp(lucu_cache_get(c, &n[2]), "two") == 0);
 	generate_call_test((int[]){1, 1, 1, 0, 0, 0});
 
-	cr_expect(strcmp(lucu_cache_get(c, &n[0]), "zero"));
+	cr_expect(strcmp(lucu_cache_get(c, &n[0]), "zero") == 0);
 	generate_call_test((int[]){1, 1, 1, 0, 0, 0});
 
-	cr_expect(strcmp(lucu_cache_get(c, &n[1]), "one"));
+	cr_expect(strcmp(lucu_cache_get(c, &n[1]), "one") == 0);
 	generate_call_test((int[]){1, 1, 1, 0, 0, 0});
 
-	cr_expect(strcmp(lucu_cache_get(c, &n[2]), "two"));
+	cr_expect(strcmp(lucu_cache_get(c, &n[2]), "two") == 0);
 	generate_call_test((int[]){1, 1, 1, 0, 0, 0});
 
 	// {0, 1, 2, 3}
-	cr_expect(strcmp(lucu_cache_get(c, &n[3]), "three"));
+	cr_expect(strcmp(lucu_cache_get(c, &n[3]), "three") == 0);
 	generate_call_test((int[]){1, 1, 1, 1, 0, 0});
 
-	cr_expect(strcmp(lucu_cache_get(c, &n[3]), "three"));
+	cr_expect(strcmp(lucu_cache_get(c, &n[3]), "three") == 0);
 	generate_call_test((int[]){1, 1, 1, 1, 0, 0});
 
-	cr_expect(strcmp(lucu_cache_get(c, &n[0]), "zero"));
+	cr_expect(strcmp(lucu_cache_get(c, &n[0]), "zero") == 0);
 	generate_call_test((int[]){1, 1, 1, 1, 0, 0});
 
-	cr_expect(strcmp(lucu_cache_get(c, &n[1]), "one"));
+	cr_expect(strcmp(lucu_cache_get(c, &n[1]), "one") == 0);
 	generate_call_test((int[]){1, 1, 1, 1, 0, 0});
 
-	cr_expect(strcmp(lucu_cache_get(c, &n[2]), "two"));
+	cr_expect(strcmp(lucu_cache_get(c, &n[2]), "two") == 0);
 	generate_call_test((int[]){1, 1, 1, 1, 0, 0});
 
-	cr_expect(strcmp(lucu_cache_get(c, &n[3]), "three"));
+	cr_expect(strcmp(lucu_cache_get(c, &n[3]), "three") == 0);
 	generate_call_test((int[]){1, 1, 1, 1, 0, 0});
 
 	// {1, 2, 3, 4}
-	cr_expect(strcmp(lucu_cache_get(c, &n[4]), "four"));
+	cr_expect(strcmp(lucu_cache_get(c, &n[4]), "four") == 0);
 	generate_call_test((int[]){1, 1, 1, 1, 1, 0});
 
-	cr_expect(strcmp(lucu_cache_get(c, &n[4]), "four"));
+	cr_expect(strcmp(lucu_cache_get(c, &n[4]), "four") == 0);
 	generate_call_test((int[]){1, 1, 1, 1, 1, 0});
 
 	// {2, 3, 4, 0}
-	cr_expect(strcmp(lucu_cache_get(c, &n[0]), "zero"));
+	cr_expect(strcmp(lucu_cache_get(c, &n[0]), "zero") == 0);
 	generate_call_test((int[]){2, 1, 1, 1, 1, 0});
 
-	cr_expect(strcmp(lucu_cache_get(c, &n[2]), "two"));
+	cr_expect(strcmp(lucu_cache_get(c, &n[2]), "two") == 0);
 	generate_call_test((int[]){2, 1, 1, 1, 1, 0});
 
-	cr_expect(strcmp(lucu_cache_get(c, &n[3]), "three"));
+	cr_expect(strcmp(lucu_cache_get(c, &n[3]), "three") == 0);
 	generate_call_test((int[]){2, 1, 1, 1, 1, 0});
 
-	cr_expect(strcmp(lucu_cache_get(c, &n[4]), "four"));
+	cr_expect(strcmp(lucu_cache_get(c, &n[4]), "four") == 0);
 	generate_call_test((int[]){2, 1, 1, 1, 1, 0});
 
 	// {3, 4, 0, 1}
-	cr_expect(strcmp(lucu_cache_get(c, &n[1]), "one"));
+	cr_expect(strcmp(lucu_cache_get(c, &n[1]), "one") == 0);
 	generate_call_test((int[]){2, 2, 1, 1, 1, 0});
 
-	cr_expect(strcmp(lucu_cache_get(c, &n[1]), "one"));
+	cr_expect(strcmp(lucu_cache_get(c, &n[1]), "one") == 0);
 	generate_call_test((int[]){2, 2, 1, 1, 1, 0});
 
-	cr_expect(strcmp(lucu_cache_get(c, &n[3]), "three"));
+	cr_expect(strcmp(lucu_cache_get(c, &n[3]), "three") == 0);
 	generate_call_test((int[]){2, 2, 1, 1, 1, 0});
 
-	cr_expect(strcmp(lucu_cache_get(c, &n[4]), "four"));
+	cr_expect(strcmp(lucu_cache_get(c, &n[4]), "four") == 0);
 	generate_call_test((int[]){2, 2, 1, 1, 1, 0});
 
-	cr_expect(strcmp(lucu_cache_get(c, &n[0]), "zero"));
+	cr_expect(strcmp(lucu_cache_get(c, &n[0]), "zero") == 0);
 	generate_call_test((int[]){2, 2, 1, 1, 1, 0});
 
 	// {4, 0, 1, 5}
-	cr_expect(strcmp(lucu_cache_get(c, &n[5]), "five"));
+	cr_expect(strcmp(lucu_cache_get(c, &n[5]), "five") == 0);
 	generate_call_test((int[]){2, 2, 1, 1, 1, 1});
 
-	cr_expect(strcmp(lucu_cache_get(c, &n[5]), "five"));
+	cr_expect(strcmp(lucu_cache_get(c, &n[5]), "five") == 0);
 	generate_call_test((int[]){2, 2, 1, 1, 1, 1});
 
-	cr_expect(strcmp(lucu_cache_get(c, &n[4]), "four"));
+	cr_expect(strcmp(lucu_cache_get(c, &n[4]), "four") == 0);
 	generate_call_test((int[]){2, 2, 1, 1, 1, 1});
 
-	cr_expect(strcmp(lucu_cache_get(c, &n[0]), "zero"));
+	cr_expect(strcmp(lucu_cache_get(c, &n[0]), "zero") == 0);
 	generate_call_test((int[]){2, 2, 1, 1, 1, 1});
 
-	cr_expect(strcmp(lucu_cache_get(c, &n[1]), "one"));
+	cr_expect(strcmp(lucu_cache_get(c, &n[1]), "one") == 0);
 	generate_call_test((int[]){2, 2, 1, 1, 1, 1});
 
 	// {0, 1, 5, 2}
-	cr_expect(strcmp(lucu_cache_get(c, &n[2]), "two"));
+	cr_expect(strcmp(lucu_cache_get(c, &n[2]), "two") == 0);
 	generate_call_test((int[]){2, 2, 2, 1, 1, 1});
 
-	cr_expect(strcmp(lucu_cache_get(c, &n[2]), "two"));
+	cr_expect(strcmp(lucu_cache_get(c, &n[2]), "two") == 0);
 	generate_call_test((int[]){2, 2, 2, 1, 1, 1});
 
-	cr_expect(strcmp(lucu_cache_get(c, &n[0]), "zero"));
+	cr_expect(strcmp(lucu_cache_get(c, &n[0]), "zero") == 0);
 	generate_call_test((int[]){2, 2, 2, 1, 1, 1});
 
-	cr_expect(strcmp(lucu_cache_get(c, &n[1]), "one"));
+	cr_expect(strcmp(lucu_cache_get(c, &n[1]), "one") == 0);
 	generate_call_test((int[]){2, 2, 2, 1, 1, 1});
 
-	cr_expect(strcmp(lucu_cache_get(c, &n[5]), "five"));
+	cr_expect(strcmp(lucu_cache_get(c, &n[5]), "five") == 0);
 	generate_call_test((int[]){2, 2, 2, 1, 1, 1});
 
 	lucu_cache_destroy(c);
