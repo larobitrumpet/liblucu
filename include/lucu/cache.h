@@ -2,6 +2,7 @@
 #define LUCU_CACHE_H
 
 #include <stdlib.h>
+#include <stdbool.h>
 
 typedef struct LucuCacheData LucuCacheData;
 typedef LucuCacheData* LucuCache;
