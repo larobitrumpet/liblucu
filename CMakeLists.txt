@@ -5,7 +5,7 @@ project(
 	DESCRIPTION "Lucy's Useful C Utils"
 	LANGUAGES C
 )
-set(PROJECT_VERSION 1.4.0-alpha)
+set(PROJECT_VERSION 1.4.0-beta)
 
 list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 
