@@ -2,6 +2,12 @@
 #include <criterion/criterion.h>
 #include <criterion/internal/assert.h>
 
+bool int_equal(void* a, void* b, void* p);
+bool even(void* n, void* p);
+void* map(void* n, void* p);
+bool min(void* a, void* b, void* p);
+bool max(void* a, void* b, void* p);
+
 Test(vector, from_array) {
 	const int arr[] = {0, 1, 2, 3, 4, 5};
 

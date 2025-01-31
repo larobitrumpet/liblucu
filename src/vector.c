@@ -353,7 +353,7 @@ void* lucu_vector_min_max(LucuVector vector, bool (* const compare_func)(void*, 
 	return min_max;
 }
 
-void merge(LucuVector vector, const int start, const int middle, const int end, bool (*compare_function)(void*, void*, void*), void* params) {
+static void merge(LucuVector vector, const int start, const int middle, const int end, bool (*compare_function)(void*, void*, void*), void* params) {
 	LucuVector merged = lucu_vector_new(vector->bytewidth, vector->free_function);
 
 	int i = start;
@@ -392,7 +392,7 @@ void merge(LucuVector vector, const int start, const int middle, const int end, 
 	lucu_vector_destroy(merged);
 }
 
-void merge_sort(LucuVector vector, const int start, const int end, bool (*compare_function)(void*, void*, void*), void* params) {
+static void merge_sort(LucuVector vector, const int start, const int end, bool (*compare_function)(void*, void*, void*), void* params) {
 	if (start == end) {
 		return;
 	} else if (end - start == 1) {

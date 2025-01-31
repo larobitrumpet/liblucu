@@ -3,32 +3,39 @@
 #include <criterion/internal/assert.h>
 #include <string.h>
 
+bool equal(void* key_1, void* key_2, void* p);
+void* generate(void* n);
+void generate_call_test(int n[6]);
+
+int generate_call[6];
+
 bool equal(void* key_1, void* key_2, void* p) {
 	(void)p;
 	return *(int*)key_1 == *(int*)key_2;
 }
 
-int generate_call[6];
-
 void* generate(void* n) {
 	generate_call[*(int*)n]++;
 
+	#pragma GCC diagnostic push
+	#pragma GCC diagnostic ignored "-Wcast-qual"
 	switch (*(int*)n) {
 		case 0:
-			return "zero";
+			return (char*)"zero";
 		case 1:
-			return "one";
+			return (char*)"one";
 		case 2:
-			return "two";
+			return (char*)"two";
 		case 3:
-			return "three";
+			return (char*)"three";
 		case 4:
-			return "four";
+			return (char*)"four";
 		case 5:
-			return "five";
+			return (char*)"five";
 		default:
 			cr_assert(false);
 	}
+	#pragma GCC diagnostic pop
 	return NULL;
 }
 
