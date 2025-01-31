@@ -20,8 +20,6 @@ typedef LucuCacheData* LucuCache;
  * If it doesn't, it will create the value and store it, evicting old values
  * if necessary.
  * @param cache_size The max number of elements to store at a time.
- * @param key_size The size in bytes of the key used.
- * @param value_size The size in bytes of the cached value.
  * @param keys_equal_function Function used to determine if two keys are equal.
  * The first parameter is a pointer to the key value stored in the cache.
  * The second parameter is a pointer to the provided key being searched for.
@@ -35,7 +33,7 @@ typedef LucuCacheData* LucuCache;
  * when evicting and destroying the cache. Can be NULL to do nothing.
  * @return A newly created `LucuCache`
  */
-LucuCache lucu_cache_new(const int cache_size, const size_t key_size, const size_t value_size, bool (*keys_equal_function)(void*, void*, void*), void* keys_equal_function_params, void* (*generate_function)(void*), void (*key_free_function)(void*), void (*value_free_function)(void*));
+LucuCache lucu_cache_new(const int cache_size, bool (*keys_equal_function)(void*, void*, void*), void* keys_equal_function_params, void* (*generate_function)(void*), void (*key_free_function)(void*), void (*value_free_function)(void*));
 
 /**
  * Frees the memory used by a `LucuCache` and any memory used

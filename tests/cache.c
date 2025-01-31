@@ -40,7 +40,7 @@ void generate_call_test(int n[6]) {
 
 Test(cache, test) {
 	int n[6] = {0, 1, 2, 3, 4, 5};
-	LucuCache c = lucu_cache_new(4, sizeof(int), sizeof(char*), equal, NULL, generate, NULL, NULL);
+	LucuCache c = lucu_cache_new(4, equal, NULL, generate, NULL, NULL);
 
 	generate_call_test((int[]){0, 0, 0, 0, 0, 0});
 

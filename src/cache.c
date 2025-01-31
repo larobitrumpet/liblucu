@@ -23,8 +23,6 @@ static void keyvalue_destroy(void* keyvalue) {
 struct LucuCacheData {
 	LucuVector cache;
 	int cache_size;
-	size_t key_size;
-	size_t value_size;
 	bool (*keys_equal_function)(void*, void*, void*);
 	void* keys_equal_function_params;
 	void* (*generate_function)(void*);
@@ -32,7 +30,7 @@ struct LucuCacheData {
 	void (*value_free_function)(void*);
 };
 
-LucuCache lucu_cache_new(const int cache_size, const size_t key_size, const size_t value_size, bool (*keys_equal_function)(void*, void*, void*), void* keys_equal_function_params, void* (*generate_function)(void*), void (*key_free_function)(void*), void (*value_free_function)(void*)) {
+LucuCache lucu_cache_new(const int cache_size, bool (*keys_equal_function)(void*, void*, void*), void* keys_equal_function_params, void* (*generate_function)(void*), void (*key_free_function)(void*), void (*value_free_function)(void*)) {
 	LucuCache cache = malloc(sizeof(LucuCacheData));
 	cache->cache = lucu_vector_new_with_size(cache_size, sizeof(KeyValue), keyvalue_destroy);
 	cache->cache_size = cache_size;
