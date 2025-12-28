@@ -12,6 +12,7 @@ Test(vector, from_array) {
 	const int arr[] = {0, 1, 2, 3, 4, 5};
 
 	LucuVector v = lucu_vector_from_array(arr, 6, sizeof(int), NULL);
+	cr_assert(lucu_vector_length(v) == 6);
 
 	for (int i = 0; i < 6; i++) {
 		cr_expect(*(int*)lucu_vector_get(v, i) == i);
