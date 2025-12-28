@@ -81,6 +81,7 @@ LucuVector lucu_vector_from_array(const void* const arr, const int length, const
 	assert(length > 0);
 	LucuVector vector = lucu_vector_new_with_size(length, bytewidth, free_function);
 	memcpy(vector->v, arr, (size_t)length * bytewidth);
+	vector->tail = length;
 	return vector;
 }
 
@@ -135,7 +136,7 @@ bool lucu_vector_is_empty(const LucuVector vector) {
 }
 
 int lucu_vector_length(const LucuVector vector) {
-	return mod(vector->tail - vector->head, vector->size);
+	return (vector->tail < vector->head ? vector->tail + vector->size : vector->tail) - vector->head;
 }
 
 static void lucu_vector_increase_size(LucuVector vector) {
