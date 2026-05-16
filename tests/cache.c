@@ -3,15 +3,15 @@
 #include <criterion/internal/assert.h>
 #include <string.h>
 
-bool equal(void* key_1, void* key_2, void* p);
+bool equal(const void* key_1, const void* key_2, void* p);
 void* generate(void* n);
 void generate_call_test(int n[6]);
 
 int generate_call[6];
 
-bool equal(void* key_1, void* key_2, void* p) {
+bool equal(const void* key_1, const void* key_2, void* p) {
 	(void)p;
-	return *(int*)key_1 == *(int*)key_2;
+	return *(const int*)key_1 == *(const int*)key_2;
 }
 
 void* generate(void* n) {

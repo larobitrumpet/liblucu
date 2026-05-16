@@ -33,7 +33,7 @@ typedef LucuCacheData* LucuCache;
  * when evicting and destroying the cache. Can be NULL to do nothing.
  * @return A newly created `LucuCache`
  */
-LucuCache lucu_cache_new(const int cache_size, bool (*keys_equal_function)(void*, void*, void*), void* keys_equal_function_params, void* (*generate_function)(void*), void (*key_free_function)(void*), void (*value_free_function)(void*));
+LucuCache lucu_cache_new(const int cache_size, bool (*keys_equal_function)(const void*, const void*, void*), void* keys_equal_function_params, void* (*generate_function)(void*), void (*key_free_function)(void*), void (*value_free_function)(void*));
 
 /**
  * Frees the memory used by a `LucuCache` and any memory used

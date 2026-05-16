@@ -5,13 +5,24 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
-typedef struct LucuVectorData LucuVectorData;
 /**
- * A dynamically sized circular array.
- *
- * A list that stores generic values.
+ * A dynamic array that stored generic values.
  */
-typedef LucuVectorData* LucuVector;
+typedef struct LucuVector {
+	/// Array where elements are stored
+	void* v;
+	/// The number of bytes that an element takes up
+	size_t bytewidth;
+	/// Number of elements that can be stored in the currently allocated space.
+	/// **Not** the number of elements in the array.
+	/// **Not** the number of bytes allocated.
+	int size;
+	/// Number of elements currently stored in the array.
+	int length;
+	/// Function used to free elements of the `LucuVector`.
+	/// See `lucu_vector_new` for more information
+	void (*free_function)(void*);
+} LucuVector;
 
 /**
  * Create a new `LucuVector`.
@@ -25,7 +36,7 @@ typedef LucuVectorData* LucuVector;
  * Takes a `void*` pointing to the element to be freed.
  * @return A new `LucuVector`
  */
-LucuVector lucu_vector_new(const size_t bytewidth, void (*free_function)(void*));
+LucuVector lucu_vector_new(size_t bytewidth, void (*free_function)(void*));
 
 /**
  * Create a `LucuVector` with a specified allocated size
@@ -36,7 +47,7 @@ LucuVector lucu_vector_new(const size_t bytewidth, void (*free_function)(void*))
  * @param bytewidth The number of bytes that an element takes up.
  * @param free_function Function used to free elements (see `lucu_vector_new`).
  */
-LucuVector lucu_vector_new_with_size(const int length, const size_t bytewidth, void (*free_function)(void*));
+LucuVector lucu_vector_new_with_size(int length, size_t bytewidth, void (*free_function)(void*));
 
 /**
  * Deconstructs a `LucuVector`.
@@ -44,7 +55,7 @@ LucuVector lucu_vector_new_with_size(const int length, const size_t bytewidth, v
  * Frees the memory allocated to a `LucuVector` and optionally it's elements.
  * @param vector The `LucuVector` to deconstruct.
  */
-void lucu_vector_destroy(LucuVector vector);
+void lucu_vector_destroy(LucuVector* vector);
 
 /**
  * Creates a new `LucuVector` from an existing array.
@@ -55,19 +66,20 @@ void lucu_vector_destroy(LucuVector vector);
  * @param bytewidth The number of bytes that an element takes up.
  * @param free_function Function used to free elements (see `lucu_vector_new`)
  */
-LucuVector lucu_vector_from_array(const void* arr, const int length, const size_t bytewidth, void (*free_function)(void*));
+LucuVector lucu_vector_from_array(const void* arr, int length, size_t bytewidth, void (*free_function)(void*));
 
 /**
- * Creates an array from a `LucuVector`.
+ * Returns a pointer to the data inside the vector.
  *
- * Copies the content of a `LucuVector` into an array.
- * @param[in] vector The `LucuVector` to convert to an array.
- * @param[out] size The number of bytes that the returned array contains.
- * @return Array of elements copied from `vector`.
- * Returns `NULL` if `vector` is empty.
- * This array is created by `malloc` and must be freed by the user.
+ * Sometimes you need to use a function, perhaps from another library,
+ * that needs the data in a vector. This function exposes that data.
+ * **DO NOT USE UNLESS YOU KNOW WHAT YOU ARE DOING!!!**
+ * Directly modifying the data in a `LucuVector` can lead to unexpected results.
+ * You have been warned!
+ * @param vector `LucuVector` to get data from.
+ * @return Pointer to the internal data contained within the vector.
  */
-void* lucu_vector_to_array(const LucuVector vector, size_t* size);
+void* lucu_vector_get_data(const LucuVector* vector);
 
 /**
  * Print the contents of a `LucuVector` to `stdout`.
@@ -76,7 +88,7 @@ void* lucu_vector_to_array(const LucuVector vector, size_t* size);
  * Takes a pointer to the element and `params`.
  * @param params Passed to `print_function`.
  */
-void lucu_vector_print(const LucuVector vector, void (*print_function)(void*, void*), void* params);
+void lucu_vector_print(const LucuVector* vector, void (*print_function)(void*, void*), void* params);
 
 /**
  * Tests if a `LucuVector` is empty.
@@ -86,7 +98,7 @@ void lucu_vector_print(const LucuVector vector, void (*print_function)(void*, vo
  * @param vector The `LucuVector` to test.
  * @return `bool` of if `vector` is empty.
  */
-bool lucu_vector_is_empty(const LucuVector vector);
+bool lucu_vector_is_empty(const LucuVector* vector);
 
 /**
  * Length of a `LucuVector`.
@@ -95,7 +107,7 @@ bool lucu_vector_is_empty(const LucuVector vector);
  * @param vector The `LucuVector` to test.
  * @return The number of elements in `vector`.
  */
-int lucu_vector_length(const LucuVector vector);
+int lucu_vector_length(const LucuVector* vector);
 
 /**
  * Push an element to the back of a `LucuVector`.
@@ -105,7 +117,7 @@ int lucu_vector_length(const LucuVector vector);
  * @pre `data` is not `NULL` and points to valid data
  * the size of the `bytewidth` used to create `vector`.
  */
-void lucu_vector_push_back(LucuVector vector, const void* data);
+void lucu_vector_push_back(LucuVector* vector, const void* data);
 
 /**
  * Push an element to the front of a `LucuVector`.
@@ -115,51 +127,55 @@ void lucu_vector_push_back(LucuVector vector, const void* data);
  * @pre `data` is not `NULL` and points to valid data
  * the size of the `bytewidth` used to create `vector`.
  */
-void lucu_vector_push_front(LucuVector vector, const void* data);
+void lucu_vector_push_front(LucuVector* vector, const void* data);
 
 /**
  * Pop an element from the front of a `LucuVector`.
  *
  * @param vector The `LucuVector` to pop from.
- * @return Pointer to the element that was at the front of `vector`.
- * This data will have to be freed by the user.
- * Is `NULL` if `vector` is empty.
+ * @param data Pointer to where the data will be stored.
+ * If `NULL`, memory will be allocated with `malloc` to store the data.
+ * @return Pointer to the popped data. `NULL` if `vector` is empty,
+ * the same as `data` if it was not `NULL`, otherwise will point to
+ * the newly allocated memory that will have to be freed by the user.
  */
-void* lucu_vector_pop_front(LucuVector vector);
+void* lucu_vector_pop_front(LucuVector* vector, void* data);
 
 /**
  * Pop an element from the back of a `LucuVector`.
  *
  * @param vector The `LucuVector` to pop from.
- * @return Pointer to the element that was at the back of `vector`.
- * This data will have to be freed by the user.
- * Is `NULL` if `vector` is empty.
+ * @param data Pointer to where the data will be stored.
+ * If `NULL`, memory will be allocated with `malloc` to store the data.
+ * @return Pointer to the popped data. `NULL` if `vector` is empty,
+ * the same as `data` if it was not `NULL`, otherwise will point to
+ * the newly allocated memory that will have to be freed by the user.
  */
-void* lucu_vector_pop_back(LucuVector vector);
+void* lucu_vector_pop_back(LucuVector* vector, void* data);
 
 /**
  * Alias for `lucu_vector_push_back`.
  * Useful when using a `LucuVector` as a stack.
  */
-void lucu_vector_push(LucuVector vector, const void* data);
+void lucu_vector_push(LucuVector* vector, const void* data);
 
 /**
  * Alias for `lucu_vector_pop_back`.
  * Useful when using a `LucuVector` as a stack.
  */
-void* lucu_vector_pop(LucuVector vector);
+void* lucu_vector_pop(LucuVector* vector, void* data);
 
 /**
  * Alias for `lucu_vector_push_back`.
  * Useful when using a `LucuVector` as a queue.
  */
-void lucu_vector_enqueue(LucuVector vector, const void* data);
+void lucu_vector_enqueue(LucuVector* vector, const void* data);
 
 /**
  * Alias for `lucu_vector_pop_front`.
  * Useful when using a `LucuVector` as a queue.
  */
-void* lucu_vector_dequeue(LucuVector vector);
+void* lucu_vector_dequeue(LucuVector* vector, void* data);
 
 /**
  * Swap the elements of `vector` at `index_1` and `index_2`.
@@ -167,7 +183,7 @@ void* lucu_vector_dequeue(LucuVector vector);
  * @param index_1 One of the indexes to swap.
  * @param index_2 The other index to swap.
  */
-void lucu_vector_swap(LucuVector vector, const int index_1, const int index_2);
+void lucu_vector_swap(LucuVector* vector, int index_1, int index_2);
 
 /**
  * Gets the index of an element in a `LucuVector`.
@@ -182,7 +198,7 @@ void lucu_vector_swap(LucuVector vector, const int index_1, const int index_2);
  * @param params Passed as the last argument to `equal`.
  * @return The index of the element found. Is -1 if the element cannot be found.
  */
-int lucu_vector_index(LucuVector vector, void* const data, bool (*equal)(void*, void*, void*), void* params);
+int lucu_vector_index(const LucuVector* vector, const void* data, bool (*equal)(const void*, const void*, void*), void* params);
 
 /**
  * Gets a pointer to the element at `index` of a `LucuVector`.
@@ -192,7 +208,7 @@ int lucu_vector_index(LucuVector vector, void* const data, bool (*equal)(void*, 
  * @return Pointer to the element at `index`.
  * @pre `index` **must** be a valid index within the bounds of `vector`. Otherwise will give a pointer to junk data.
  */
-void* lucu_vector_get(const LucuVector vector, const int index);
+void* lucu_vector_get(const LucuVector* vector, int index);
 
 /**
  * Remove an element from a `LucuVector`.
@@ -201,16 +217,17 @@ void* lucu_vector_get(const LucuVector vector, const int index);
  * @param index Index of the element to remove.
  * @pre `index` **must** be a valid index within the bounds of `vector`.
  */
-void lucu_vector_remove(LucuVector vector, const int index);
+void lucu_vector_remove(LucuVector* vector, int index);
 
 /**
  * Insert an element at an index into a `LucuVector`.
  *
  * @param vector 'LucuVector' to insert into.
  * @param data Element to insert and copy into `vector`.
- * @param index Index to insert into.
+ * @param index Index to insert into. If the index is greater than the bounds
+ * of `vector`, the element will be inserted at the end of the vector.
 */
-void lucu_vector_insert(LucuVector vector, const void* const data, const int index);
+void lucu_vector_insert(LucuVector* vector, const void* data, int index);
 
 /**
  * Iterate over elements of a `LucuVector`.
@@ -221,7 +238,18 @@ void lucu_vector_insert(LucuVector vector, const void* const data, const int ind
  * and `false` if iteration should continue.
  * @param params Passed to `func`.
  */
-void lucu_vector_iterate(LucuVector vector, bool (*func)(void*, void*), void* params);
+void lucu_vector_iterate(const LucuVector* vector, bool (*func)(const void*, void*), void* params);
+
+/**
+ * Mutable version of `lucu_vector_iterate`
+ *
+ * @param vector 'LucuVector' to iterate over.
+ * @param func Function to apply to each element. Accepts a pointer
+ * to the element and `params`. Returns `true` if iteration should stop
+ * and `false` if iteration should continue.
+ * @param params Passed to `func`.
+ */
+void lucu_vector_mut_iterate(LucuVector* vector, bool (*func)(void*, void*), void* params);
 
 /**
  * Filters through a `LucuVector`.
@@ -235,7 +263,7 @@ void lucu_vector_iterate(LucuVector vector, bool (*func)(void*, void*), void* pa
  * @param param Passed to `filter_function`
  * @return A new LucuVector with copied elements
  */
-LucuVector lucu_vector_filter(LucuVector vector, bool (* const filter_function)(void*, void*), void* const params);
+LucuVector lucu_vector_filter(const LucuVector* vector, bool (*filter_function)(const void*, void*), void* params);
 
 /**
  * Maps elements of a `LucuVector`.
@@ -250,20 +278,22 @@ LucuVector lucu_vector_filter(LucuVector vector, bool (* const filter_function)(
  * after it has been copied into `vector`. Can be `NULL` to not free any data.
  * @param params Passed to `map_function`.
  */
-LucuVector lucu_vector_map(LucuVector vector, size_t target_bytewidth, void (* const target_free_function)(void*), void* (* const map_function)(void*, void*), void (* const map_func_return_free)(void*), void* const params);
+LucuVector lucu_vector_map(const LucuVector* vector, size_t target_bytewidth, void (*target_free_function)(void*), void* (*map_function)(const void*, void*), void (*map_func_return_free)(void*), void* params);
 
 /**
- * Finds the min or max of a `LucuVector`.
+ * Finds a superlative of a `LucuVector` based on a comparison function.
  *
+ * Useful for finding the min or max in a `LucuVector`, or whatever
+ * superlative you need.
  * @param vector `LucuVector` to search through
  * @param compare_function Function used to determine if an element
  * is greater than or less than another element. Accepts the current
- * min or max, an element from `vector`, and `params`. Returns `true`
- * if the element from `vector` should replace the current min or max,
+ * superlative, an element from `vector`, and `params`. Returns `true`
+ * if the element from `vector` should replace the current superlative,
  * returns `false` otherwise.
- * @param params Passed to compare_function.
+ * @param params Passed to `compare_function`.
  */
-void* lucu_vector_min_max(LucuVector vector, bool (* const compare_function)(void*, void*, void*), void* const params);
+void* lucu_vector_superlative(const LucuVector* vector, bool (*compare_function)(const void*, const void*, void*), void* params);
 
 /**
  * Sorts a `LucuVector`.
@@ -275,7 +305,8 @@ void* lucu_vector_min_max(LucuVector vector, bool (* const compare_function)(voi
  * Takes a pointer to each element and `params`. Returns `true` if
  * the first element should be sorted before the second element and
  * `false` if the second element should be sorted before the first element.
+ * @param params Passed to `compare_function`.
  */
-void lucu_vector_sort(LucuVector vector, bool (*compare_function)(void*, void*, void*), void* params);
+void lucu_vector_sort(LucuVector* vector, bool (*compare_function)(const void*, const void*, void*), void* params);
 
 #endif
