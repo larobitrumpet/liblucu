@@ -284,6 +284,15 @@ void lucu_vector_resize(LucuVector* vector, int length, const void* data);
 void lucu_vector_extend_array(LucuVector* vector, const void* arr, int length);
 
 /**
+ * Extends the contents of a `LucuVector` with the elements of another `LucuVector`.
+ *
+ * @param vector `LucuVector` to extend.
+ * @param ext `LucuVector` to copy elements from.
+ * @pre `vector` and `ext` must have the same kind of data with the same bytewidth and free functions.
+ */
+void lucu_vector_extend(LucuVector* vector, const LucuVector* ext);
+
+/**
  * Reserves capacity for at least `additional` more elements to be added to a `LucuVector`.
  *
  * May reserve more space than requested to speculatively avoid frequent reallocations.

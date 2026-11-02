@@ -321,6 +321,12 @@ void lucu_vector_extend_array(LucuVector *vector, const void *arr, int length) {
 	vector->length = vector->length + length;
 }
 
+void lucu_vector_extend(LucuVector *vector, const LucuVector* ext) {
+	assert(vector->bytewidth == ext->bytewidth);
+
+	lucu_vector_extend_array(vector, lucu_vector_get_data(ext), ext->length);
+}
+
 void lucu_vector_reserve(LucuVector* vector, const int additional) {
 	lucu_vector_grow_amortized(vector, additional);
 }
