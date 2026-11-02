@@ -50,6 +50,10 @@ void lucu_vector_destroy(LucuVector* vector) {
 	free(vector->v);
 }
 
+void lucu_vector_destroy_free_function(void* vector) {
+	lucu_vector_destroy(vector);
+}
+
 LucuVector lucu_vector_from_array(const void* const arr, const int length, const size_t bytewidth, void (* const free_function)(void*)) {
 	assert(length > 0);
 	LucuVector vector = lucu_vector_new_with_size(length, bytewidth, free_function);
@@ -480,4 +484,21 @@ static void merge_sort(LucuVector* vector, const int start, const int end, bool 
 
 void lucu_vector_sort(LucuVector* vector, bool (*compare_function)(const void*, const void*, void*), void* params) {
 	merge_sort(vector, 0, lucu_vector_length(vector), compare_function, params);
+}
+
+LucuVector lucu_vector_flatten(const LucuVector* vector) {
+	int new_length = 0;
+
+	for (int i = 0; i < vector->length; i++) {
+		assert(((LucuVector*)lucu_vector_get(vector, i))->bytewidth == ((LucuVector*)lucu_vector_get(vector, 0))->bytewidth);
+		new_length += ((LucuVector*)lucu_vector_get(vector, i))->length;
+	}
+
+	LucuVector v = lucu_vector_new_with_size(new_length, ((LucuVector*)lucu_vector_get(vector, 0))->bytewidth, ((LucuVector*)lucu_vector_get(vector, 0))->free_function);
+
+	for (int i = 0; i < vector->length; i++) {
+		lucu_vector_extend(&v, lucu_vector_get(vector, i));
+	}
+
+	return v;
 }

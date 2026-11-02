@@ -59,6 +59,15 @@ LucuVector lucu_vector_new_with_size(int length, size_t bytewidth, void (*free_f
  */
 void lucu_vector_destroy(LucuVector* vector);
 
+/*
+ * Wraper for `lucu_vector_destroy` so that it can be passed as a `free_function`.
+ * Useful for when you have a `LucuVector` that contains `LucuVector`s, this
+ * is the `free_function` for that `LucuVector`.
+ *
+ * @param vector The `LucuVector` to deconstruct.
+ */
+void lucu_vector_destroy_free_function(void* vector);
+
 /**
  * Creates a new `LucuVector` from an existing array.
  *
@@ -417,5 +426,19 @@ void* lucu_vector_superlative(const LucuVector* vector, bool (*compare_function)
  * @param params Passed to `compare_function`.
  */
 void lucu_vector_sort(LucuVector* vector, bool (*compare_function)(const void*, const void*, void*), void* params);
+
+/**
+* Flattens a `LucuVector` into a new `LucuVector`
+*
+* Given a `LucuVector` that contains `LucuVector`s as its elements,
+* returns a new `LucuVector` that contains the elements of the inner `LucuVector`s
+* as if they were all appended together.
+*
+* @param vector `LucuVector` to flatten.
+* @return A new `LucuVector` that's the flattened version of `vector`.
+* @pre All of the `LucuVector`s within `vector` must have they same type of data,
+* with the same bytewidth and same free functions.
+*/
+LucuVector lucu_vector_flatten(const LucuVector* vector);
 
 #endif
