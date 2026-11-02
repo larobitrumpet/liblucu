@@ -293,6 +293,13 @@ void lucu_vector_extend_array(LucuVector* vector, const void* arr, int length);
 void lucu_vector_extend(LucuVector* vector, const LucuVector* ext);
 
 /**
+ * Removes all elements from a `LucuVector`.
+ *
+ * @param vector `LucuVector` to clear
+ */
+void lucu_vector_clear(LucuVector* vector);
+
+/**
  * Reserves capacity for at least `additional` more elements to be added to a `LucuVector`.
  *
  * May reserve more space than requested to speculatively avoid frequent reallocations.

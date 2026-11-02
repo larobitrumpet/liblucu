@@ -327,6 +327,10 @@ void lucu_vector_extend(LucuVector *vector, const LucuVector* ext) {
 	lucu_vector_extend_array(vector, lucu_vector_get_data(ext), ext->length);
 }
 
+void lucu_vector_clear(LucuVector *vector) {
+	lucu_vector_truncate(vector, 0);
+}
+
 void lucu_vector_reserve(LucuVector* vector, const int additional) {
 	lucu_vector_grow_amortized(vector, additional);
 }
