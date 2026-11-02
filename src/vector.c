@@ -247,6 +247,19 @@ void lucu_vector_remove(LucuVector* vector, const int index) {
 	}
 }
 
+void lucu_vector_swap_remove(LucuVector* vector, int index) {
+	assert(index < lucu_vector_length(vector) && index >= 0);
+	if (vector->free_function != NULL) {
+		vector->free_function(lucu_vector_get(vector, index));
+	}
+
+	vector->length--;
+
+	if (index != vector->length) {
+		memcpy(lucu_vector_get(vector, index), lucu_vector_get(vector, vector->length), vector->bytewidth);
+	}
+}
+
 void lucu_vector_insert(LucuVector* vector, const void* const data, const int index) {
 	assert(index >= 0);
 

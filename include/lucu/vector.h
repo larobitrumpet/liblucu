@@ -215,11 +215,27 @@ void* lucu_vector_get(const LucuVector* vector, int index);
 /**
  * Remove an element from a `LucuVector`.
  *
+ * Removes an element from a `LucuVector` and shifts over elements to take it place,
+ * thus preserving the order with a performance of O(n). If you don't need the order
+ * preserved, prefer useing `lucu_vector_swap_remove` instead.
  * @param vector `LucuVector` to remove element from.
  * @param index Index of the element to remove.
  * @pre `index` **must** be a valid index within the bounds of `vector`.
  */
 void lucu_vector_remove(LucuVector* vector, int index);
+
+/**
+ * Remove an element from a `LucuVector`.
+ *
+ * Removes an element from a `LucuVector` and replacing it with the last element in the vector.
+ * This doesn't preserve the order of elements, but has a performance of O(1).
+ * If you need to preserve the order, use `lucu_vector_remove` instead.
+ * preserved, use `lucu_vector_swap_remove`.
+ * @param vector `LucuVector` to remove element from.
+ * @param index Index of the element to remove.
+ * @pre `index` **must** be a valid index within the bounds of `vector`.
+ */
+void lucu_vector_swap_remove(LucuVector* vector, int index);
 
 /**
  * Insert an element at an index into a `LucuVector`.

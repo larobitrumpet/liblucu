@@ -324,6 +324,43 @@ Test(vector, remove) {
 	lucu_vector_destroy(&v);
 }
 
+Test(vector, swap_remove) {
+	LucuVector v = lucu_vector_new(sizeof(int), NULL);
+	for (int i = 1; i < 6; i++) {
+		lucu_vector_push_back(&v, &i);
+	}
+	cr_assert(not(lucu_vector_is_empty(&v)));
+	cr_assert(eq(int, lucu_vector_length(&v), 5));
+	cr_assert(eq(int, *(int*)lucu_vector_get(&v, 0), 1));
+	cr_assert(eq(int, *(int*)lucu_vector_get(&v, 1), 2));
+	cr_assert(eq(int, *(int*)lucu_vector_get(&v, 2), 3));
+	cr_assert(eq(int, *(int*)lucu_vector_get(&v, 3), 4));
+	cr_assert(eq(int, *(int*)lucu_vector_get(&v, 4), 5));
+
+	lucu_vector_swap_remove(&v, 2);
+	cr_assert(not(lucu_vector_is_empty(&v)));
+	cr_assert(eq(int, lucu_vector_length(&v), 4));
+	cr_assert(eq(int, *(int*)lucu_vector_get(&v, 0), 1));
+	cr_assert(eq(int, *(int*)lucu_vector_get(&v, 1), 2));
+	cr_assert(eq(int, *(int*)lucu_vector_get(&v, 2), 5));
+	cr_assert(eq(int, *(int*)lucu_vector_get(&v, 3), 4));
+
+	lucu_vector_swap_remove(&v, 3);
+	cr_assert(not(lucu_vector_is_empty(&v)));
+	cr_assert(eq(int, lucu_vector_length(&v), 3));
+	cr_assert(eq(int, *(int*)lucu_vector_get(&v, 0), 1));
+	cr_assert(eq(int, *(int*)lucu_vector_get(&v, 1), 2));
+	cr_assert(eq(int, *(int*)lucu_vector_get(&v, 2), 5));
+
+	lucu_vector_swap_remove(&v, 0);
+	cr_assert(not(lucu_vector_is_empty(&v)));
+	cr_assert(eq(int, lucu_vector_length(&v), 2));
+	cr_assert(eq(int, *(int*)lucu_vector_get(&v, 0), 5));
+	cr_assert(eq(int, *(int*)lucu_vector_get(&v, 1), 2));
+
+	lucu_vector_destroy(&v);
+}
+
 Test(vector, insert) {
 	LucuVector v = lucu_vector_new(sizeof(int), NULL);
 
