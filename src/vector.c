@@ -276,6 +276,20 @@ void lucu_vector_reserve_exact(LucuVector* vector, int additional) {
 	lucu_vector_grow_exact(vector, additional);
 }
 
+void lucu_vector_shrink_to_fit(LucuVector* vector) {
+	lucu_vector_shrink_to(vector, vector->length);
+}
+
+void lucu_vector_shrink_to(LucuVector* vector, int min_size) {
+	if (vector->size <= min_size) {
+		return;
+	}
+
+	vector->size = vector->length >= min_size ? vector->length : (min_size >= vector->min_size ? min_size : vector->min_size);
+
+	vector->v = realloc(vector->v, vector->bytewidth * (size_t)vector->size);
+}
+
 void lucu_vector_iterate(const LucuVector* vector, bool (* const func)(const void*, void*), void* const params) {
 	for (int i = 0; i < vector->length; i++) {
 		if (func(lucu_vector_get(vector, i), params))

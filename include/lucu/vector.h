@@ -253,6 +253,24 @@ void lucu_vector_reserve(LucuVector* vector, int additional);
 void lucu_vector_reserve_exact(LucuVector* vector, int additional);
 
 /**
+ * Shrinks the size of a `LucuVector` to be as small as possible.
+ *
+ * Does not effect the length of the `LucuVector`, only how much memory it is allocated.
+ * May have some additional capacity for small `LucuVector`s just like `lucu_vector_new_with_size`.
+ * @param vector `LucuVector` to shrink
+ */
+void lucu_vector_shrink_to_fit(LucuVector* vector);
+
+/**
+ * Shrinks the size of a `LucuVector` to a minimum size.
+ *
+ * Does not effect the length of the `LucuVector`, only how much memory it is allocated.
+ * The size will be at least the length of the `LucuVector`.
+ * Does nothing if the size is already less than `min_size`.
+ */
+void lucu_vector_shrink_to(LucuVector* vector, int min_size);
+
+/**
  * Iterate over elements of a `LucuVector`.
  *
  * @param vector 'LucuVector' to iterate over.
