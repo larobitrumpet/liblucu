@@ -248,6 +248,17 @@ void lucu_vector_swap_remove(LucuVector* vector, int index);
 void lucu_vector_insert(LucuVector* vector, const void* data, int index);
 
 /**
+ * Shortens a `LucuVector` to `length`.
+ *
+ * Keeps the first `length` elements and removes the rest.
+ * Has no effect if `length` is greater than or equal to the length of the `LucuVector`.
+ * Does not effect the size of the `LucuVector`.
+ * @param vector `LucuVector` to truncate.
+ * @param length The new length to shorten to.
+ */
+void lucu_vector_truncate(LucuVector* vector, int length);
+
+/**
  * Reserves capacity for at least `additional` more elements to be added to a `LucuVector`.
  *
  * May reserve more space than requested to speculatively avoid frequent reallocations.

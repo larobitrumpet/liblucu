@@ -281,6 +281,18 @@ void lucu_vector_insert(LucuVector* vector, const void* const data, const int in
 	vector->length++;
 }
 
+void lucu_vector_truncate(LucuVector* vector, int length) {
+	if (vector->free_function != NULL) {
+		for (int i = length; i < vector->length; i++) {
+			vector->free_function(lucu_vector_get(vector, i));
+		}
+	}
+
+	if (length < vector->length) {
+		vector->length = length;
+	}
+}
+
 void lucu_vector_reserve(LucuVector* vector, const int additional) {
 	lucu_vector_grow_amortized(vector, additional);
 }
