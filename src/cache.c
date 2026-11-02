@@ -2,6 +2,7 @@
 #include "lucu/lucu.h"
 #include "lucu/vector.h"
 #include <assert.h>
+#include <string.h>
 
 typedef struct KeyValue {
 	void* key;
@@ -31,15 +32,18 @@ struct LucuCacheData {
 };
 
 LucuCache lucu_cache_new(const int cache_size, bool (*keys_equal_function)(const void*, const void*, void*), void* keys_equal_function_params, void* (*generate_function)(void*), void (*key_free_function)(void*), void (*value_free_function)(void*)) {
-	LucuCache cache = malloc(sizeof(LucuCacheData));
-	cache->cache = lucu_vector_new_with_size(cache_size, sizeof(KeyValue), keyvalue_destroy);
-	cache->cache_size = cache_size;
-	cache->generate_function = generate_function;
-	cache->keys_equal_function = keys_equal_function;
-	cache->keys_equal_function_params = keys_equal_function_params;
-	cache->key_free_function = key_free_function;
-	cache->value_free_function = value_free_function;
-	return cache;
+	LucuCache al = malloc(sizeof(LucuCacheData));
+	LucuCacheData cache = {
+		.cache = lucu_vector_new_with_size(cache_size, sizeof(KeyValue), keyvalue_destroy),
+		.cache_size = cache_size,
+		.generate_function = generate_function,
+		.keys_equal_function = keys_equal_function,
+		.keys_equal_function_params = keys_equal_function_params,
+		.key_free_function = key_free_function,
+		.value_free_function = value_free_function,
+	};
+	memcpy(al, &cache, sizeof(LucuCacheData));
+	return al;
 }
 
 void lucu_cache_destroy(LucuCache cache) {

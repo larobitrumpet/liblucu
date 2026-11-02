@@ -6,33 +6,23 @@
 #include <assert.h>
 #include <stdio.h>
 
-/**
- * Initial size of the vector.
- *
- * The number of elements to initially allocate memory for when creating a new
- * vector. **Must** be an integer greater than 0.
- */
-#define LUCU_VECTOR_INIT_SIZE 16
-/**
- * Size increase multiplier.
- *
- * When increasing the size of a vector, the size is multiplied by this
- * constant. **Must** be greater than 1.
- */
-#define LUCU_VECTOR_SIZE_INCREASE 1.5
-
 /*static inline int mod(const int a, const int b) {
 	return ((a % b) + b) % b;
 }*/
 
-static void lucu_vector_increase_size(LucuVector* vector);
+static void lucu_vector_grow_amortized(LucuVector* vector, int additional);
+//static void lucu_vector_grow_exact(LucuVector* vector, int additional);
 
 LucuVector lucu_vector_new(const size_t bytewidth, void (* const free_function)(void*)) {
-	return lucu_vector_new_with_size(LUCU_VECTOR_INIT_SIZE, bytewidth, free_function);
+	return lucu_vector_new_with_size(0, bytewidth, free_function);
 }
 
 LucuVector lucu_vector_new_with_size(const int size, const size_t bytewidth, void (* const free_function)(void*)) {
-	const int s = size == 0 ? LUCU_VECTOR_INIT_SIZE : size;
+	// The way minimum size is calculation is taken from Rust's `Vec`s (see RawVecInner::min_non_zero_cap)
+	// https://github.com/rust-lang/rust/blob/3b5aab2cea0711a2cc87a5a71338b5dba241b6a9/library/alloc/src/raw_vec/mod.rs#L163-L176
+	const int min_size = bytewidth == 1 ? 8 : (bytewidth <= 1024 ? 4 : 1);
+
+	const int s = size > min_size ? size : min_size;
 
 	LucuVector vector = {
 		.bytewidth = bytewidth,
@@ -40,6 +30,7 @@ LucuVector lucu_vector_new_with_size(const int size, const size_t bytewidth, voi
 		.v = malloc(bytewidth * (size_t)s),
 		.length = 0,
 		.free_function = free_function,
+		.min_size = min_size,
 	};
 
 	return vector;
@@ -98,15 +89,34 @@ int lucu_vector_length(const LucuVector* vector) {
 	return vector->length;
 }
 
-static void lucu_vector_increase_size(LucuVector* vector) {
-	vector->size = (int)(vector->size * LUCU_VECTOR_SIZE_INCREASE);
+static void lucu_vector_grow_amortized(LucuVector* vector, const int additional) {
+	const int required_size = vector->length + additional;
+
+	if (vector->size >= required_size) {
+		return;
+	}
+
+	// This ensures exponential growth for more optimal memory allocation
+	// Taken from Rust's `Vec`s
+	// https://github.com/rust-lang/rust/blob/3b5aab2cea0711a2cc87a5a71338b5dba241b6a9/library/alloc/src/raw_vec/mod.rs#L524-L555
+	const int exp_size = vector->size * 2;
+	vector->size = required_size > exp_size ? required_size : exp_size;
 	vector->v = realloc(vector->v, vector->bytewidth * (size_t)vector->size);
 }
 
+//static void lucu_vector_grow_exact(LucuVector* vector, const int additional) {
+//	const int required_size = vector->length + additional;
+//
+//	if (vector->size >= required_size) {
+//		return;
+//	}
+//
+//	vector->size = required_size;
+//	vector->v = realloc(vector->v, vector->bytewidth * (size_t)vector->size);
+//}
+
 void lucu_vector_push_back(LucuVector* vector, const void* const data) {
-	if (vector->length == vector->size) {
-		lucu_vector_increase_size(vector);
-	}
+	lucu_vector_grow_amortized(vector, 1);
 	memcpy(lucu_vector_get(vector, vector->length), data, vector->bytewidth);
 	vector->length++;
 }
@@ -120,9 +130,7 @@ void lucu_vector_enqueue(LucuVector* vector, const void* const data) {
 }
 
 void lucu_vector_push_front(LucuVector* vector, const void* const data) {
-	if (lucu_vector_length(vector) == vector->size) {
-		lucu_vector_increase_size(vector);
-	}
+	lucu_vector_grow_amortized(vector, 1);
 	// TODO: Do benchmark testing to see if it is better to copy each
 	// element one at a time, or to just use memmove
 	for (int i = vector->length; i > 0; i--) {
@@ -247,9 +255,7 @@ void lucu_vector_insert(LucuVector* vector, const void* const data, const int in
 		return;
 	}
 
-	if (vector->length == vector->size) {
-		lucu_vector_increase_size(vector);
-	}
+	lucu_vector_grow_amortized(vector, 1);
 
 	// TODO: Do benchmark testing to see if it is better to copy each
 	// element one at a time, or to just use memmove

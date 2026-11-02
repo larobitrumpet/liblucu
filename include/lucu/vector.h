@@ -12,7 +12,7 @@ typedef struct LucuVector {
 	/// Array where elements are stored
 	void* v;
 	/// The number of bytes that an element takes up
-	size_t bytewidth;
+	const size_t bytewidth;
 	/// Number of elements that can be stored in the currently allocated space.
 	/// **Not** the number of elements in the array.
 	/// **Not** the number of bytes allocated.
@@ -22,6 +22,8 @@ typedef struct LucuVector {
 	/// Function used to free elements of the `LucuVector`.
 	/// See `lucu_vector_new` for more information
 	void (*free_function)(void*);
+	/// The minimum size that the vector should take up
+	const int min_size;
 } LucuVector;
 
 /**
@@ -43,7 +45,7 @@ LucuVector lucu_vector_new(size_t bytewidth, void (*free_function)(void*));
  *
  * Creates a `LucuVector` so that it can hold `length` elements
  * without needing to reallocate.
- * @param length Number of elements to allocate memory for.
+ * @param length Minimum number of elements to allocate memory for.
  * @param bytewidth The number of bytes that an element takes up.
  * @param free_function Function used to free elements (see `lucu_vector_new`).
  */
