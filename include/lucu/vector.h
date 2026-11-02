@@ -232,6 +232,27 @@ void lucu_vector_remove(LucuVector* vector, int index);
 void lucu_vector_insert(LucuVector* vector, const void* data, int index);
 
 /**
+ * Reserves capacity for at least `additional` more elements to be added to a `LucuVector`.
+ *
+ * May reserve more space than requested to speculatively avoid frequent reallocations.
+ * Does nothing if there is already enough space.
+ * @param vector `LucuVector` to reserve space for.
+ * @param additional How many additional elements to the current length to reserve space for.
+ */
+void lucu_vector_reserve(LucuVector* vector, int additional);
+
+/**
+ * Reserves capacity for `additional` more elements to be added to a `LucuVector`.
+ *
+ * Unlike `lucu_vector_reserve`, this will not reallocate more than is requested.
+ * Does nothing if there is already enough space.
+ * Prefer to use `lucu_vector_reserve` if additional insertions will be performed.
+ * @param vector `LucuVector` to reserve space for.
+ * @param additional How many additional elements to the current length to reserve space for.
+ */
+void lucu_vector_reserve_exact(LucuVector* vector, int additional);
+
+/**
  * Iterate over elements of a `LucuVector`.
  *
  * @param vector 'LucuVector' to iterate over.

@@ -11,7 +11,7 @@
 }*/
 
 static void lucu_vector_grow_amortized(LucuVector* vector, int additional);
-//static void lucu_vector_grow_exact(LucuVector* vector, int additional);
+static void lucu_vector_grow_exact(LucuVector* vector, int additional);
 
 LucuVector lucu_vector_new(const size_t bytewidth, void (* const free_function)(void*)) {
 	return lucu_vector_new_with_size(0, bytewidth, free_function);
@@ -104,16 +104,16 @@ static void lucu_vector_grow_amortized(LucuVector* vector, const int additional)
 	vector->v = realloc(vector->v, vector->bytewidth * (size_t)vector->size);
 }
 
-//static void lucu_vector_grow_exact(LucuVector* vector, const int additional) {
-//	const int required_size = vector->length + additional;
-//
-//	if (vector->size >= required_size) {
-//		return;
-//	}
-//
-//	vector->size = required_size;
-//	vector->v = realloc(vector->v, vector->bytewidth * (size_t)vector->size);
-//}
+static void lucu_vector_grow_exact(LucuVector* vector, const int additional) {
+	const int required_size = vector->length + additional;
+
+	if (vector->size >= required_size) {
+		return;
+	}
+
+	vector->size = required_size;
+	vector->v = realloc(vector->v, vector->bytewidth * (size_t)vector->size);
+}
 
 void lucu_vector_push_back(LucuVector* vector, const void* const data) {
 	lucu_vector_grow_amortized(vector, 1);
@@ -266,6 +266,14 @@ void lucu_vector_insert(LucuVector* vector, const void* const data, const int in
 	memcpy(lucu_vector_get(vector, index), data, vector->bytewidth);
 
 	vector->length++;
+}
+
+void lucu_vector_reserve(LucuVector* vector, const int additional) {
+	lucu_vector_grow_amortized(vector, additional);
+}
+
+void lucu_vector_reserve_exact(LucuVector* vector, int additional) {
+	lucu_vector_grow_exact(vector, additional);
 }
 
 void lucu_vector_iterate(const LucuVector* vector, bool (* const func)(const void*, void*), void* const params) {
