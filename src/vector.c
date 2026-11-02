@@ -309,6 +309,18 @@ void lucu_vector_resize(LucuVector* vector, const int length, const void* data) 
 	vector->length = length;
 }
 
+void lucu_vector_extend_array(LucuVector *vector, const void *arr, int length) {
+	if (length == 0) {
+		return;
+	}
+
+	lucu_vector_grow_amortized(vector, length);
+
+	memcpy(lucu_vector_get(vector, vector->length), arr, vector->bytewidth * (size_t)length);
+
+	vector->length = vector->length + length;
+}
+
 void lucu_vector_reserve(LucuVector* vector, const int additional) {
 	lucu_vector_grow_amortized(vector, additional);
 }

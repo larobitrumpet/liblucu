@@ -643,6 +643,59 @@ Test(vector, resize) {
 	lucu_vector_destroy(&v);
 }
 
+Test(vector, extend_array) {
+	const int arr1[] = {1, 2, 3, 4, 5};
+	const int arr2[] = {6, 7, 8, 9, 10};
+
+	LucuVector v = lucu_vector_new(sizeof(int), NULL);
+	cr_assert(lucu_vector_is_empty(&v));
+	cr_assert(eq(int, lucu_vector_length(&v), 0));
+
+	lucu_vector_extend_array(&v, arr1, 5);
+	cr_assert(not(lucu_vector_is_empty(&v)));
+	cr_assert(eq(int, lucu_vector_length(&v), 5));
+	cr_assert(eq(int, *(int*)lucu_vector_get(&v, 0), 1));
+	cr_assert(eq(int, *(int*)lucu_vector_get(&v, 1), 2));
+	cr_assert(eq(int, *(int*)lucu_vector_get(&v, 2), 3));
+	cr_assert(eq(int, *(int*)lucu_vector_get(&v, 3), 4));
+	cr_assert(eq(int, *(int*)lucu_vector_get(&v, 4), 5));
+
+	lucu_vector_extend_array(&v, arr2, 5);
+	cr_assert(not(lucu_vector_is_empty(&v)));
+	cr_assert(eq(int, lucu_vector_length(&v), 10));
+	cr_assert(eq(int, *(int*)lucu_vector_get(&v, 0), 1));
+	cr_assert(eq(int, *(int*)lucu_vector_get(&v, 1), 2));
+	cr_assert(eq(int, *(int*)lucu_vector_get(&v, 2), 3));
+	cr_assert(eq(int, *(int*)lucu_vector_get(&v, 3), 4));
+	cr_assert(eq(int, *(int*)lucu_vector_get(&v, 4), 5));
+	cr_assert(eq(int, *(int*)lucu_vector_get(&v, 5), 6));
+	cr_assert(eq(int, *(int*)lucu_vector_get(&v, 6), 7));
+	cr_assert(eq(int, *(int*)lucu_vector_get(&v, 7), 8));
+	cr_assert(eq(int, *(int*)lucu_vector_get(&v, 8), 9));
+	cr_assert(eq(int, *(int*)lucu_vector_get(&v, 9), 10));
+
+	lucu_vector_extend_array(&v, arr1, 5);
+	cr_assert(not(lucu_vector_is_empty(&v)));
+	cr_assert(eq(int, lucu_vector_length(&v), 15));
+	cr_assert(eq(int, *(int*)lucu_vector_get(&v, 0), 1));
+	cr_assert(eq(int, *(int*)lucu_vector_get(&v, 1), 2));
+	cr_assert(eq(int, *(int*)lucu_vector_get(&v, 2), 3));
+	cr_assert(eq(int, *(int*)lucu_vector_get(&v, 3), 4));
+	cr_assert(eq(int, *(int*)lucu_vector_get(&v, 4), 5));
+	cr_assert(eq(int, *(int*)lucu_vector_get(&v, 5), 6));
+	cr_assert(eq(int, *(int*)lucu_vector_get(&v, 6), 7));
+	cr_assert(eq(int, *(int*)lucu_vector_get(&v, 7), 8));
+	cr_assert(eq(int, *(int*)lucu_vector_get(&v, 8), 9));
+	cr_assert(eq(int, *(int*)lucu_vector_get(&v, 9), 10));
+	cr_assert(eq(int, *(int*)lucu_vector_get(&v, 10), 1));
+	cr_assert(eq(int, *(int*)lucu_vector_get(&v, 11), 2));
+	cr_assert(eq(int, *(int*)lucu_vector_get(&v, 12), 3));
+	cr_assert(eq(int, *(int*)lucu_vector_get(&v, 13), 4));
+	cr_assert(eq(int, *(int*)lucu_vector_get(&v, 14), 5));
+
+	lucu_vector_destroy(&v);
+}
+
 bool even(const void* n, void* p) {
 	(void)p;
 	return *(const int*)n % 2 == 0;
