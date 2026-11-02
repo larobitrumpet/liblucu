@@ -259,6 +259,21 @@ void lucu_vector_insert(LucuVector* vector, const void* data, int index);
 void lucu_vector_truncate(LucuVector* vector, int length);
 
 /**
+ * Resizes a `LucuVector` to be `length`.
+ *
+ * If `length` is greater than the length of the `LucuVector`,
+ * then it is extended to the new lenght, with new elements being copied from
+ * the data pointed to by `data`. If `data` is `NULL`, then the new elements
+ * will be undefined.
+ * If `length` is less than the length of the `LucuVector`,
+ * then it is truncated to that length.
+ * @param vector `LucuVector` to resize.
+ * @param length The new length of the vector.
+ * @param data Pointer to elements to be copied into new spots.
+ */
+void lucu_vector_resize(LucuVector* vector, int length, const void* data);
+
+/**
  * Reserves capacity for at least `additional` more elements to be added to a `LucuVector`.
  *
  * May reserve more space than requested to speculatively avoid frequent reallocations.

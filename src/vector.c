@@ -293,6 +293,22 @@ void lucu_vector_truncate(LucuVector* vector, int length) {
 	}
 }
 
+void lucu_vector_resize(LucuVector* vector, const int length, const void* data) {
+	if (length < vector->length) {
+		lucu_vector_truncate(vector, length);
+	}
+
+	lucu_vector_grow_amortized(vector, length - vector->length);
+
+	if (data != NULL) {
+		for (int i = vector->length; i < length; i++) {
+			memcpy(lucu_vector_get(vector, i), data, vector->bytewidth);
+		}
+	}
+
+	vector->length = length;
+}
+
 void lucu_vector_reserve(LucuVector* vector, const int additional) {
 	lucu_vector_grow_amortized(vector, additional);
 }
