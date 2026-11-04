@@ -398,7 +398,6 @@ LucuVector lucu_vector_filter(const LucuVector* vector, bool (* const filter_fun
 }
 
 static bool lucu_vector_map_func(const void* const data, void* const params) {
-	//void* pars[] = {(void*)&new_vector, (void*)&mf, map_function_data, (void*)&rf, map_func_return_free_data};
 
 	void** pars = (void**)params;
 	LucuVector* vector = (LucuVector*)pars[0];
