@@ -11,7 +11,8 @@ typedef struct KeyValue {
 	void (*value_free_function)(void*);
 } KeyValue;
 
-static void keyvalue_destroy(void* keyvalue) {
+static void keyvalue_destroy(void* keyvalue, void* _data) {
+	(void)_data;
 	KeyValue* kv = (KeyValue*)keyvalue;
 	if (kv->key_free_function != NULL) {
 		kv->key_free_function(kv->key);
@@ -34,7 +35,7 @@ struct LucuCacheData {
 LucuCache lucu_cache_new(const int cache_size, bool (*keys_equal_function)(const void*, const void*, void*), void* keys_equal_function_params, void* (*generate_function)(void*), void (*key_free_function)(void*), void (*value_free_function)(void*)) {
 	LucuCache al = malloc(sizeof(LucuCacheData));
 	LucuCacheData cache = {
-		.cache = lucu_vector_new_with_size(cache_size, sizeof(KeyValue), keyvalue_destroy),
+		.cache = lucu_vector_new_with_size(cache_size, sizeof(KeyValue), keyvalue_destroy, NULL),
 		.cache_size = cache_size,
 		.generate_function = generate_function,
 		.keys_equal_function = keys_equal_function,
@@ -53,7 +54,7 @@ void lucu_cache_destroy(LucuCache cache) {
 
 static void evict(LucuCache cache) {
 	KeyValue* keyvalue = lucu_vector_dequeue(&cache->cache, NULL);
-	keyvalue_destroy(keyvalue);
+	keyvalue_destroy(keyvalue, NULL);
 	free(keyvalue);
 }
 

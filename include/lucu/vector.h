@@ -21,7 +21,9 @@ typedef struct LucuVector {
 	int length;
 	/// Function used to free elements of the `LucuVector`.
 	/// See `lucu_vector_new` for more information
-	void (*free_function)(void*);
+	void (*free_function)(void*, void*);
+	/// Data to be passed as the second argument to `free_function`
+	void* free_function_data;
 	/// The minimum size that the vector should take up
 	const int min_size;
 } LucuVector;
@@ -35,10 +37,11 @@ typedef struct LucuVector {
  * @param bytewidth The number of bytes that an element takes up.
  * @param free_function Function used to free elements.
  * Can be `NULL` to forgo freeing elements.
- * Takes a `void*` pointing to the element to be freed.
+ * Takes a `void*` pointing to the element to be freed and the data from `free_function_data`.
+ * @param free_function_data Data that will be passed as the second argument to `free_function`.
  * @return A new `LucuVector`
  */
-LucuVector lucu_vector_new(size_t bytewidth, void (*free_function)(void*));
+LucuVector lucu_vector_new(size_t bytewidth, void (*free_function)(void*, void*), void* free_function_data);
 
 /**
  * Create a `LucuVector` with a specified allocated size
@@ -48,8 +51,9 @@ LucuVector lucu_vector_new(size_t bytewidth, void (*free_function)(void*));
  * @param length Minimum number of elements to allocate memory for.
  * @param bytewidth The number of bytes that an element takes up.
  * @param free_function Function used to free elements (see `lucu_vector_new`).
+ * @param free_function_data Data that will be passed as the second argument to `free_function`.
  */
-LucuVector lucu_vector_new_with_size(int length, size_t bytewidth, void (*free_function)(void*));
+LucuVector lucu_vector_new_with_size(int length, size_t bytewidth, void (*free_function)(void*, void*), void* free_function_data);
 
 /**
  * Deconstructs a `LucuVector`.
@@ -60,13 +64,22 @@ LucuVector lucu_vector_new_with_size(int length, size_t bytewidth, void (*free_f
 void lucu_vector_destroy(LucuVector* vector);
 
 /*
+ * Wrapper for `free` so it can be passed as a `free_function`.
+ *
+ * @param ptr Data to free
+ * @_data Unused
+ */
+void lucu_free_function_free(void* ptr, void* _data);
+
+/*
  * Wraper for `lucu_vector_destroy` so that it can be passed as a `free_function`.
  * Useful for when you have a `LucuVector` that contains `LucuVector`s, this
  * is the `free_function` for that `LucuVector`.
  *
  * @param vector The `LucuVector` to deconstruct.
+ * @param _data Unused
  */
-void lucu_vector_destroy_free_function(void* vector);
+void lucu_vector_destroy_free_function(void* vector, void* _data);
 
 /**
  * Creates a new `LucuVector` from an existing array.
@@ -76,8 +89,9 @@ void lucu_vector_destroy_free_function(void* vector);
  * @param length The number of elements in `arr`. **Must** be >= 1.
  * @param bytewidth The number of bytes that an element takes up.
  * @param free_function Function used to free elements (see `lucu_vector_new`)
+ * @param free_function_data Data that will be passed as the second argument to `free_function`.
  */
-LucuVector lucu_vector_from_array(const void* arr, int length, size_t bytewidth, void (*free_function)(void*));
+LucuVector lucu_vector_from_array(const void* arr, int length, size_t bytewidth, void (*free_function)(void*, void*), void* free_function_data);
 
 /**
  * Returns a pointer to the data inside the vector.
@@ -390,13 +404,22 @@ LucuVector lucu_vector_filter(const LucuVector* vector, bool (*filter_function)(
  * @param vector 'LucuVector' to map from.
  * @param target_bytewidth The number of bytes that the mapped to data takes up.
  * @param target_free_function Function used to free mapped to data.
+ * @param target_free_function_data Data that will be passed as the second argument to `target_free_function`.
  * @param map_function Function used to map elements.
+ * The first argument is the data to map from,
+ * and the second argument is `map_function_data`.
+ * @param map_function_data Passed as the second argument to `map_function`.
  * Takes an element from `vector` and `params`.
  * @param map_func_return_free Function used to free the data returned by `map_function`
- * after it has been copied into `vector`. Can be `NULL` to not free any data.
- * @param params Passed to `map_function`.
+ * after it has been copied into `vector`.
+ * Can be `NULL` to not free any data.
+ * Because `map_function` returns a pointer to the mapped data, the mapped data
+ * can't (or shouldn't) be on the stack, and thus space needs to be allocated.
+ * After the data is coppied into the `LucuVector`, it isn't used anymore and needs
+ * to be freed, which is what this function does. Look at the `map` test for an example.
+ * @param map_func_return_free_data Data passed as the second argument to `map_func_return_free`.
  */
-LucuVector lucu_vector_map(const LucuVector* vector, size_t target_bytewidth, void (*target_free_function)(void*), void* (*map_function)(const void*, void*), void (*map_func_return_free)(void*), void* params);
+LucuVector lucu_vector_map(const LucuVector* vector, size_t target_bytewidth, void (*target_free_function)(void*, void*), void* target_free_function_data, void* (*map_function)(const void*, void*), void* map_function_data, void (*map_func_return_free)(void*, void*), void* map_func_return_free_data);
 
 /**
  * Finds a superlative of a `LucuVector` based on a comparison function.

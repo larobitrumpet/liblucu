@@ -1,4 +1,4 @@
-#include "lucu/vector.h"
+#include <lucu/vector.h>
 #include <criterion/criterion.h>
 #include <criterion/new/assert.h>
 
@@ -11,7 +11,7 @@ bool max(const void* a, const void* b, void* p);
 Test(vector, from_array) {
 	const int arr[] = {0, 1, 2, 3, 4, 5};
 
-	LucuVector v = lucu_vector_from_array(arr, 6, sizeof(int), NULL);
+	LucuVector v = lucu_vector_from_array(arr, 6, sizeof(int), NULL, NULL);
 	cr_assert(eq(int, lucu_vector_length(&v), 6), "Length of LucuVector is not 6");
 
 	for (int i = 0; i < 6; i++) {
@@ -22,7 +22,7 @@ Test(vector, from_array) {
 }
 
 Test(vector, push_back) {
-	LucuVector v = lucu_vector_new(sizeof(int), NULL);
+	LucuVector v = lucu_vector_new(sizeof(int), NULL, NULL);
 	cr_assert(lucu_vector_is_empty(&v));
 	cr_assert(eq(int, lucu_vector_length(&v), 0));
 
@@ -57,7 +57,7 @@ Test(vector, push_back) {
 }
 
 Test(vector, push_front) {
-	LucuVector v = lucu_vector_new(sizeof(int), NULL);
+	LucuVector v = lucu_vector_new(sizeof(int), NULL, NULL);
 	cr_assert(lucu_vector_is_empty(&v));
 	cr_assert(eq(int, lucu_vector_length(&v), 0));
 
@@ -92,7 +92,7 @@ Test(vector, push_front) {
 }
 
 Test(vector, pop_back) {
-	LucuVector v = lucu_vector_new(sizeof(int), NULL);
+	LucuVector v = lucu_vector_new(sizeof(int), NULL, NULL);
 	cr_assert(lucu_vector_is_empty(&v));
 	cr_assert(eq(int, lucu_vector_length(&v), 0));
 
@@ -146,7 +146,7 @@ Test(vector, pop_back) {
 }
 
 Test(vector, pop_front) {
-	LucuVector v = lucu_vector_new(sizeof(int), NULL);
+	LucuVector v = lucu_vector_new(sizeof(int), NULL, NULL);
 	cr_assert(lucu_vector_is_empty(&v));
 	cr_assert(eq(int, lucu_vector_length(&v), 0));
 
@@ -209,7 +209,7 @@ bool int_equal(const void* a, const void* b, void* p) {
 }
 
 Test(vector, find_index) {
-	LucuVector v = lucu_vector_new(sizeof(int), NULL);
+	LucuVector v = lucu_vector_new(sizeof(int), NULL, NULL);
 	cr_assert(lucu_vector_is_empty(&v));
 	cr_assert(eq(int, lucu_vector_length(&v), 0));
 
@@ -288,7 +288,7 @@ Test(vector, find_index) {
 }
 
 Test(vector, remove) {
-	LucuVector v = lucu_vector_new(sizeof(int), NULL);
+	LucuVector v = lucu_vector_new(sizeof(int), NULL, NULL);
 	for (int i = 1; i < 6; i++) {
 		lucu_vector_push_back(&v, &i);
 	}
@@ -325,7 +325,7 @@ Test(vector, remove) {
 }
 
 Test(vector, swap_remove) {
-	LucuVector v = lucu_vector_new(sizeof(int), NULL);
+	LucuVector v = lucu_vector_new(sizeof(int), NULL, NULL);
 	for (int i = 1; i < 6; i++) {
 		lucu_vector_push_back(&v, &i);
 	}
@@ -362,7 +362,7 @@ Test(vector, swap_remove) {
 }
 
 Test(vector, insert) {
-	LucuVector v = lucu_vector_new(sizeof(int), NULL);
+	LucuVector v = lucu_vector_new(sizeof(int), NULL, NULL);
 
 	int first = 1;
 	int second = 2;
@@ -409,7 +409,7 @@ Test(vector, insert) {
 }
 
 Test(vector, truncate) {
-	LucuVector v = lucu_vector_new(sizeof(int), NULL);
+	LucuVector v = lucu_vector_new(sizeof(int), NULL, NULL);
 	for (int i = 1; i < 8; i++) {
 		lucu_vector_push_back(&v, &i);
 	}
@@ -474,7 +474,7 @@ Test(vector, truncate) {
 }
 
 Test(vector, resize_truncate) {
-	LucuVector v = lucu_vector_new(sizeof(int), NULL);
+	LucuVector v = lucu_vector_new(sizeof(int), NULL, NULL);
 	for (int i = 1; i < 8; i++) {
 		lucu_vector_push_back(&v, &i);
 	}
@@ -528,7 +528,7 @@ Test(vector, resize_truncate) {
 Test(vector, resize_extend) {
 	const int d = 15;
 
-	LucuVector v = lucu_vector_new(sizeof(int), NULL);
+	LucuVector v = lucu_vector_new(sizeof(int), NULL, NULL);
 	for (int i = 1; i < 6; i++) {
 		lucu_vector_push_back(&v, &i);
 	}
@@ -558,7 +558,7 @@ Test(vector, resize_extend) {
 Test(vector, resize) {
 	const int d = 15;
 
-	LucuVector v = lucu_vector_new(sizeof(int), NULL);
+	LucuVector v = lucu_vector_new(sizeof(int), NULL, NULL);
 	for (int i = 1; i < 6; i++) {
 		lucu_vector_push_back(&v, &i);
 	}
@@ -647,7 +647,7 @@ Test(vector, extend_array) {
 	const int arr1[] = {1, 2, 3, 4, 5};
 	const int arr2[] = {6, 7, 8, 9, 10};
 
-	LucuVector v = lucu_vector_new(sizeof(int), NULL);
+	LucuVector v = lucu_vector_new(sizeof(int), NULL, NULL);
 	cr_assert(lucu_vector_is_empty(&v));
 	cr_assert(eq(int, lucu_vector_length(&v), 0));
 
@@ -700,10 +700,10 @@ Test(vector, extend_vec) {
 	const int arr1[] = {1, 2, 3, 4, 5};
 	const int arr2[] = {6, 7, 8, 9, 10};
 
-	LucuVector ext1 = lucu_vector_from_array(arr1, 5, sizeof(int), NULL);
-	LucuVector ext2 = lucu_vector_from_array(arr2, 5, sizeof(int), NULL);
+	LucuVector ext1 = lucu_vector_from_array(arr1, 5, sizeof(int), NULL, NULL);
+	LucuVector ext2 = lucu_vector_from_array(arr2, 5, sizeof(int), NULL, NULL);
 
-	LucuVector v = lucu_vector_new(sizeof(int), NULL);
+	LucuVector v = lucu_vector_new(sizeof(int), NULL, NULL);
 	cr_assert(lucu_vector_is_empty(&v));
 	cr_assert(eq(int, lucu_vector_length(&v), 0));
 
@@ -760,7 +760,7 @@ bool even(const void* n, void* p) {
 }
 
 Test(vector, filter) {
-	LucuVector v = lucu_vector_new(sizeof(int), NULL);
+	LucuVector v = lucu_vector_new(sizeof(int), NULL, NULL);
 	for (int i = 0; i < 24; i++) {
 		lucu_vector_push_back(&v, &i);
 	}
@@ -791,13 +791,13 @@ void* map(const void* n, void* p) {
 }
 
 Test(vector, map) {
-	LucuVector v = lucu_vector_new(sizeof(int), NULL);
+	LucuVector v = lucu_vector_new(sizeof(int), NULL, NULL);
 
 	for (int i = 0; i < 26; i++) {
 		lucu_vector_push_back(&v, &i);
 	}
 
-	LucuVector m = lucu_vector_map(&v, sizeof(char), NULL, map, free, NULL);
+	LucuVector m = lucu_vector_map(&v, sizeof(char), NULL, NULL, map, NULL, lucu_free_function_free, NULL);
 
 	cr_assert(eq(int, lucu_vector_length(&m), 26));
 	cr_assert(eq(chr, *(char*)lucu_vector_get(&m, 0), 'A'));
@@ -846,7 +846,7 @@ bool max(const void* a, const void* b, void* p) {
 }
 
 Test(vector, min_max) {
-	LucuVector v = lucu_vector_new(sizeof(int), NULL);
+	LucuVector v = lucu_vector_new(sizeof(int), NULL, NULL);
 
 	int a = 1;
 	int b = 2;
@@ -873,7 +873,7 @@ Test(vector, min_max) {
 }
 
 Test(vector, sort) {
-	LucuVector v = lucu_vector_new(sizeof(int), NULL);
+	LucuVector v = lucu_vector_new(sizeof(int), NULL, NULL);
 
 	int a = 1;
 	int b = 2;
@@ -908,7 +908,7 @@ Test(vector, sort) {
 }
 
 Test(vector, to_array) {
-	LucuVector v = lucu_vector_new(sizeof(int), NULL);
+	LucuVector v = lucu_vector_new(sizeof(int), NULL, NULL);
 
 	for (int i = 0; i < 6; i++) {
 		lucu_vector_push(&v, &i);
@@ -926,7 +926,7 @@ Test(vector, to_array) {
 }
 
 Test(vector, broken_array) {
-	LucuVector v = lucu_vector_new_with_size(6, sizeof(int), NULL);
+	LucuVector v = lucu_vector_new_with_size(6, sizeof(int), NULL, NULL);
 
 	for (int i = 0; i < 4; i++) {
 		lucu_vector_push(&v, &i);
@@ -956,11 +956,11 @@ Test(vector, flatten) {
 	int arr2[] = {4, 5, 6, 7, 8};
 	int arr3[] = {9};
 
-	LucuVector v1 = lucu_vector_from_array(arr1, 3, sizeof(int), NULL);
-	LucuVector v2 = lucu_vector_from_array(arr2, 5, sizeof(int), NULL);
-	LucuVector v3 = lucu_vector_from_array(arr3, 1, sizeof(int), NULL);
+	LucuVector v1 = lucu_vector_from_array(arr1, 3, sizeof(int), NULL, NULL);
+	LucuVector v2 = lucu_vector_from_array(arr2, 5, sizeof(int), NULL, NULL);
+	LucuVector v3 = lucu_vector_from_array(arr3, 1, sizeof(int), NULL, NULL);
 
-	LucuVector v = lucu_vector_new_with_size(3, sizeof(LucuVector), lucu_vector_destroy_free_function);
+	LucuVector v = lucu_vector_new_with_size(3, sizeof(LucuVector), lucu_vector_destroy_free_function, NULL);
 
 	lucu_vector_push(&v, &v1);
 	lucu_vector_push(&v, &v2);
