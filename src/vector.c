@@ -403,7 +403,7 @@ static bool lucu_vector_map_func(const void* const data, void* const params) {
 	LucuVector* vector = (LucuVector*)pars[0];
 	void* (*map_func)(const void*, void*) = (void* (*)(const void*, void*))((LucuGenericFunction*)pars[1])->f;
 	void* map_data = pars[2];
-	void* (*map_func_return_free)(void*, void*) = (void* (*)(void*, void*))((LucuGenericFunction*)pars[3])->f;
+	void (*map_func_return_free)(void*, void*) = (void (*)(void*, void*))((LucuGenericFunction*)pars[3])->f;
 	void* map_func_return_free_data = pars[4];
 	void* mapped = map_func(data, map_data);
 	lucu_vector_push_back(vector, mapped);
