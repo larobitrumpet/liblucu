@@ -28,7 +28,7 @@ int lucu_heap_length(const LucuHeap* heap);
 
 void lucu_heap_push(LucuHeap* heap, void* key, void* value);
 
-void* lucu_heap_pop(LucuHeap* heap, void* data);
+void lucu_heap_pop(LucuHeap* heap, void** key, void** value);
 
 void lucu_heap_replace(LucuHeap* heap, void* key, void* value);
 

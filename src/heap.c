@@ -214,28 +214,36 @@ void lucu_heap_push(LucuHeap* heap, void* key, void* value) {
 	lucu_heap_bubble_up(heap, lucu_heap_length(heap) - 1);
 }
 
-void* lucu_heap_pop(LucuHeap* heap, void* data) {
+void lucu_heap_pop(LucuHeap* heap, void** key, void** value) {
 	if (lucu_heap_length(heap) == 0) {
-		return NULL;
+		return;
 	}
 
-	if (data == NULL) {
-		data = malloc(heap->key_bytewidth + heap->value_bytewidth);
+	if (*key == NULL) {
+		*key = malloc(heap->key_bytewidth);
 	}
 
-	memcpy(data, lucu_vector_get(&heap->h, 0), heap->key_bytewidth + heap->value_bytewidth);
+	if (*value == NULL && heap->value_bytewidth != 0) {
+		*value = malloc(heap->value_bytewidth);
+	}
+
+	memcpy(*key, lucu_vector_get(&heap->h, 0), heap->key_bytewidth);
+
+	if (heap->value_bytewidth != 0) {
+		memcpy(*value, (void*)((uintptr_t)lucu_vector_get(&heap->h, 0) + heap->key_bytewidth), heap->value_bytewidth);
+	}
 
 	lucu_vector_swap_remove(&heap->h, 0);
 
 	lucu_heap_bubble_down(heap, 0);
-	
-	return data;
 }
 
 void lucu_heap_replace(LucuHeap* heap, void* key, void* value) {
 	if (lucu_heap_length(heap) == 0) {
 		lucu_heap_push(heap, key, value);
 	}
+
+	heap->h.free_function(lucu_vector_get(&heap->h, 0), heap->h.free_function_data);
 
 	if (heap->value_bytewidth == 0) {
 		memcpy(lucu_vector_get(&heap->h, 0), key, heap->key_bytewidth);
