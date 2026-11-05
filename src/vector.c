@@ -38,15 +38,18 @@ LucuVector lucu_vector_new_with_size(const int size, const size_t bytewidth, voi
 }
 
 static bool lucu_vector_destroy_func(void* const data, void* params) {
-	void (*free_function)(void*) = (void (*)(void*))((LucuGenericFunction*)params)->f;
-	free_function(data);
+	void** pars = (void**)params;
+	void (*free_function)(void*, void*) = (void (*)(void*, void*))((LucuGenericFunction*)pars[0])->f;
+	void* free_function_data = pars[1];
+	free_function(data, free_function_data);
 	return false;
 }
 
 void lucu_vector_destroy(LucuVector* vector) {
 	if (vector->free_function != NULL) {
 		LucuGenericFunction ff = { (void (*)(void))vector->free_function };
-		lucu_vector_mut_iterate(vector, lucu_vector_destroy_func, (void*)&ff);
+		void* params[] = {(void*)&ff, vector->free_function_data};
+		lucu_vector_mut_iterate(vector, lucu_vector_destroy_func, params);
 	}
 	free(vector->v);
 }
