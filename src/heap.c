@@ -202,6 +202,12 @@ static void* lucu_heap_pair_key_value(size_t key_bytewidth, size_t value_bytewid
 }
 
 void lucu_heap_push(LucuHeap* heap, void* key, void* value) {
+	if (heap->value_bytewidth == 0) {
+		lucu_vector_push(&heap->h, key);
+		lucu_heap_bubble_up(heap, lucu_heap_length(heap) - 1);
+		return;
+	}
+
 	void* key_value = lucu_heap_pair_key_value(heap->key_bytewidth, heap->value_bytewidth, key, value);
 	lucu_vector_push(&heap->h, key_value);
 	free(key_value);
@@ -231,11 +237,18 @@ void lucu_heap_replace(LucuHeap* heap, void* key, void* value) {
 		lucu_heap_push(heap, key, value);
 	}
 
+	if (heap->value_bytewidth == 0) {
+		memcpy(lucu_vector_get(&heap->h, 0), key, heap->key_bytewidth);
+		lucu_heap_bubble_down(heap, 0);
+		return;
+	}
+
 	void* key_value = lucu_heap_pair_key_value(heap->key_bytewidth, heap->value_bytewidth, key, value);
 
 	memcpy(lucu_vector_get(&heap->h, 0), key_value, heap->key_bytewidth + heap->value_bytewidth);
 
 	lucu_heap_bubble_down(heap, 0);
+	free(key_value);
 }
 
 void lucu_heap_update(LucuHeap* heap, int index) {
