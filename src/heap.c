@@ -170,11 +170,11 @@ static void lucu_heap_bubble_down(LucuHeap* heap, int index) {
 
 				lucu_heap_bubble_down(heap, right);
 			}
+		} else {
+			lucu_vector_swap(&heap->h, index, left);
+
+			lucu_heap_bubble_down(heap, left);
 		}
-
-		lucu_vector_swap(&heap->h, index, left);
-
-		lucu_heap_bubble_down(heap, left);
 	}
 
 	if (right >= lucu_heap_length(heap)) {
