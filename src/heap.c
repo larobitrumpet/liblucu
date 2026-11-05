@@ -219,17 +219,19 @@ void lucu_heap_pop(LucuHeap* heap, void** key, void** value) {
 		return;
 	}
 
-	if (*key == NULL) {
+	if (key != NULL && *key == NULL) {
 		*key = malloc(heap->key_bytewidth);
 	}
 
-	if (*value == NULL && heap->value_bytewidth != 0) {
+	if (value != NULL && *value == NULL && heap->value_bytewidth != 0) {
 		*value = malloc(heap->value_bytewidth);
 	}
 
-	memcpy(*key, lucu_vector_get(&heap->h, 0), heap->key_bytewidth);
+	if (key != NULL) {
+		memcpy(*key, lucu_vector_get(&heap->h, 0), heap->key_bytewidth);
+	}
 
-	if (heap->value_bytewidth != 0) {
+	if (value != NULL && heap->value_bytewidth != 0) {
 		memcpy(*value, (void*)((uintptr_t)lucu_vector_get(&heap->h, 0) + heap->key_bytewidth), heap->value_bytewidth);
 	}
 
