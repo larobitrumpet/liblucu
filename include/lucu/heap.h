@@ -34,4 +34,6 @@ void lucu_heap_replace(LucuHeap* heap, void* key, void* value);
 
 void lucu_heap_update(LucuHeap* heap, int index);
 
+int lucu_heap_index(const LucuHeap* heap, const void* key, const void* value, bool (*equal)(const void*, const void*, const void*, const void*, void*), void* params);
+
 #endif

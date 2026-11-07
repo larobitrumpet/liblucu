@@ -2,6 +2,7 @@
 #include <criterion/criterion.h>
 #include <criterion/new/assert.h>
 #include <stdio.h>
+#include <string.h>
 
 void print_heap(const LucuHeap* heap) {
 	printf("[");
@@ -163,6 +164,32 @@ Test(heap, pop_key_value) {
 		cr_expect(eq(int, x, i));
 		cr_expect(eq(int, c - 'a', x));
 		expect_is_heap(&heap);
+	}
+
+	lucu_heap_destroy(&heap);
+}
+
+bool int_equal(const void* key1, const void* _value1, const void* key2, const void* _value2, void* _) {
+	(void)_value1;
+	(void)_value2;
+
+	return *(const int*)key1 == *(const int*)key2;
+}
+
+Test(heap, index) {
+	int nums[] = {1, 15, 14, 7, 13, 2, 0, 4, 3, 11, 10, 9, 12, 6, 5, 8};
+	char letters[] = {'b', 'p', 'o', 'h', 'n', 'c', 'a', 'e', 'd', 'l', 'k', 'j', 'm', 'g', 'f', 'i'};
+
+	LucuHeap heap = lucu_heap_new_with_size(16, sizeof(int), sizeof(char), NULL, NULL, NULL, NULL, int_cmp, NULL);
+
+	for (int i = 0; i < 16; i++) {
+		lucu_heap_push(&heap, &nums[i], &letters[i]);
+	}
+
+	for (int i = 15; i >= 0; i--) {
+		const int index = lucu_heap_index(&heap, &i, NULL, int_equal, NULL);
+		cr_expect(eq(int, *(int*)lucu_heap_get_key(&heap, index), i));
+		cr_expect(eq(chr, *(char*)lucu_heap_get_value(&heap, index), 'a' + i));
 	}
 
 	lucu_heap_destroy(&heap);

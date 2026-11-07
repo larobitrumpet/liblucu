@@ -265,3 +265,45 @@ void lucu_heap_update(LucuHeap* heap, int index) {
 	lucu_heap_bubble_up(heap, index);
 	lucu_heap_bubble_down(heap, index);
 }
+
+static bool lucu_heap_index_func(const void* data1, const void* data2, void* params) {
+	void** pars = (void**)params;
+
+	bool (*equal)(const void*, const void*, const void*, const void*, void*) = (bool (*)(const void*, const void*, const void*, const void*, void*))((LucuGenericFunction*)pars[0])->f;
+	size_t* key_bytewidth = (size_t*)pars[1];
+	void* par = pars[2];
+
+	const void* key1 = data1;
+	const void* value1 = (void*)((uintptr_t)data1 + *key_bytewidth);
+	const void* key2 = data2;
+	const void* value2 = (void*)((uintptr_t)data2 + *key_bytewidth);
+
+	return equal(key1, value1, key2, value2, par);
+}
+
+int lucu_heap_index(const LucuHeap* heap, const void* key, const void* value, bool (*equal)(const void*, const void*, const void*, const void*, void*), void* params) {
+	void* key_value;
+
+	#pragma GCC diagnostic push
+	#pragma GCC diagnostic ignored "-Wcast-qual"
+	if (heap->value_bytewidth != 0 && value != NULL) {
+		key_value = malloc(sizeof(heap->key_bytewidth + heap->value_bytewidth));
+		memcpy(key_value, key, heap->key_bytewidth);
+		memcpy((void*)((uintptr_t)key_value + heap->key_bytewidth), value, heap->value_bytewidth);
+	} else {
+		key_value = (void*)key;
+	}
+
+	LucuGenericFunction eq = { (void (*)(void))equal };
+
+	void* pars[] = {(void*)&eq, (void*)&heap->key_bytewidth, params};
+	#pragma GCC diagnostic pop
+
+	const int index = lucu_vector_index(&heap->h, key_value, lucu_heap_index_func, pars);
+
+	if (heap->value_bytewidth != 0 && value != NULL) {
+		free(key_value);
+	}
+
+	return index;
+}
