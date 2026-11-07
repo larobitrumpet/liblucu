@@ -24,7 +24,7 @@ static void lucu_heap_free_key_value(void* key_value, void* data) {
 	}
 }
 
-static void** lucu_heap_create_key_value_free_data(const size_t key_bytewidth, void (*key_free_function)(void*), void* key_free_function_data, void (*value_free_function)(void*), void* value_free_function_data) {
+static void** lucu_heap_create_key_value_free_data(const size_t key_bytewidth, void (*key_free_function)(void*, void*), void* key_free_function_data, void (*value_free_function)(void*, void*), void* value_free_function_data) {
 	size_t* key_bytewidth_p = malloc(sizeof(size_t));
 	*key_bytewidth_p = key_bytewidth;
 
@@ -44,7 +44,7 @@ static void** lucu_heap_create_key_value_free_data(const size_t key_bytewidth, v
 	return key_value_free_data;
 }
 
-LucuHeap lucu_heap_new(const size_t key_bytewidth, const size_t value_bytewidth, void (*key_free_function)(void*), void* key_free_function_data, void (*value_free_function)(void*), void* value_free_function_data, bool (*compare_function)(void*, void*, void*), void* compare_function_data) {
+LucuHeap lucu_heap_new(const size_t key_bytewidth, const size_t value_bytewidth, void (*key_free_function)(void*, void*), void* key_free_function_data, void (*value_free_function)(void*, void*), void* value_free_function_data, bool (*compare_function)(void*, void*, void*), void* compare_function_data) {
 	assert(compare_function != NULL);
 
 	void** key_value_free_data = lucu_heap_create_key_value_free_data(
@@ -67,7 +67,7 @@ LucuHeap lucu_heap_new(const size_t key_bytewidth, const size_t value_bytewidth,
 	return heap;
 }
 
-LucuHeap lucu_heap_new_with_size(const int length, const size_t key_bytewidth, const size_t value_bytewidth, void (*key_free_function)(void*), void* key_free_function_data, void (*value_free_function)(void*), void* value_free_function_data, bool (*compare_function)(void*, void*, void*), void* compare_function_data) {
+LucuHeap lucu_heap_new_with_size(const int length, const size_t key_bytewidth, const size_t value_bytewidth, void (*key_free_function)(void*, void*), void* key_free_function_data, void (*value_free_function)(void*, void*), void* value_free_function_data, bool (*compare_function)(void*, void*, void*), void* compare_function_data) {
 	assert(compare_function != NULL);
 
 	void** key_value_free_data = lucu_heap_create_key_value_free_data(

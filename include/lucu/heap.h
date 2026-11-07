@@ -14,9 +14,9 @@ typedef struct LucuHeap {
 	void** key_value_free_data;
 } LucuHeap;
 
-LucuHeap lucu_heap_new(size_t key_bytewidth, size_t value_bytewidth, void (*key_freefunction)(void*), void* key_free_function_data, void (*value_freefunction)(void*), void* value_free_function_data, bool (*compare_function)(void*, void*, void*), void* compare_function_data);
+LucuHeap lucu_heap_new(size_t key_bytewidth, size_t value_bytewidth, void (*key_freefunction)(void*, void*), void* key_free_function_data, void (*value_freefunction)(void*, void*), void* value_free_function_data, bool (*compare_function)(void*, void*, void*), void* compare_function_data);
 
-LucuHeap lucu_heap_new_with_size(int length, size_t key_bytewidth, size_t value_bytewidth, void (*key_free_function)(void*), void* key_free_function_data, void (*value_free_function)(void*), void* value_free_function_data, bool (*compare_function)(void*, void*, void*), void* compare_function_data);
+LucuHeap lucu_heap_new_with_size(int length, size_t key_bytewidth, size_t value_bytewidth, void (*key_free_function)(void*, void*), void* key_free_function_data, void (*value_free_function)(void*, void*), void* value_free_function_data, bool (*compare_function)(void*, void*, void*), void* compare_function_data);
 
 void lucu_heap_destroy(LucuHeap* heap);
 
