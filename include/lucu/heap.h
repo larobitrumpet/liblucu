@@ -6,6 +6,14 @@
 #include <stdbool.h>
 #include <lucu/vector.h>
 
+typedef struct LucuHeapFreeData {
+	size_t key_bytewidth;
+	void (*key_free_function)(void*, void*);
+	void* key_free_function_data;
+	void (*value_free_function)(void*, void*);
+	void* value_free_function_data;
+} LucuHeapFreeData;
+
 /**
 * A binary max heap that can optionally hold a value with it's key.
 *
@@ -27,7 +35,7 @@ typedef struct LucuHeap {
 	/// Is passed as the third argument to `compare_function`.
 	void* compare_function_data;
 	/// All the information that is required to free all the data that `LucuHeap` has allocated.
-	void** key_value_free_data;
+	LucuHeapFreeData* free_data;
 } LucuHeap;
 
 /**

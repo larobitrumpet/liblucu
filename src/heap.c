@@ -7,47 +7,35 @@
 #include <assert.h>
 
 static void lucu_heap_free_key_value(void* key_value, void* data) {
-	void** d = (void**)data;
+	LucuHeapFreeData* d = (LucuHeapFreeData*)data;
 
-	size_t key_bytewidth = *(size_t*)d[0];
-	void (*key_free_function)(void*, void*) = (void (*)(void*, void*))((LucuGenericFunction*)d[3])->f;
-	void* key_free_function_data = d[2];
-	void (*value_free_function)(void*, void*) = (void (*)(void*, void*))((LucuGenericFunction*)d[3])->f;
-	void* value_free_function_data = d[4];
-
-	if (key_free_function != NULL) {
-		key_free_function(key_value, key_free_function_data);
+	if (d->key_free_function != NULL) {
+		d->key_free_function(key_value, d->key_free_function_data);
 	}
 
-	if (value_free_function != NULL) {
-		value_free_function((void*)((uintptr_t)key_value + key_bytewidth), value_free_function_data);
+	if (d->value_free_function != NULL) {
+		d->value_free_function((void*)((uintptr_t)key_value + d->key_bytewidth), d->value_free_function_data);
 	}
 }
 
-static void** lucu_heap_create_key_value_free_data(const size_t key_bytewidth, void (*key_free_function)(void*, void*), void* key_free_function_data, void (*value_free_function)(void*, void*), void* value_free_function_data) {
-	size_t* key_bytewidth_p = malloc(sizeof(size_t));
-	*key_bytewidth_p = key_bytewidth;
+static LucuHeapFreeData* lucu_heap_create_free_data(const size_t key_bytewidth, void (*key_free_function)(void*, void*), void* key_free_function_data, void (*value_free_function)(void*, void*), void* value_free_function_data) {
+	LucuHeapFreeData* free_data = malloc(sizeof(LucuHeapFreeData));
 
-	LucuGenericFunction* key_free_function_p = malloc(sizeof(LucuGenericFunction));
-	*key_free_function_p = (LucuGenericFunction){ .f = (void (*)(void))key_free_function };
+	*free_data = (LucuHeapFreeData){
+		.key_bytewidth = key_bytewidth,
+		.key_free_function = key_free_function,
+		.key_free_function_data = key_free_function_data,
+		.value_free_function = value_free_function,
+		.value_free_function_data = value_free_function_data,
+	};
 
-	LucuGenericFunction* value_free_function_p = malloc(sizeof(LucuGenericFunction));
-	*value_free_function_p = (LucuGenericFunction){ .f = (void (*)(void))value_free_function };
-
-	void** key_value_free_data = malloc(sizeof(void*) * 5);
-	key_value_free_data[0] = key_bytewidth_p;
-	key_value_free_data[1] = key_free_function_p;
-	key_value_free_data[2] = key_free_function_data;
-	key_value_free_data[3] = value_free_function_p;
-	key_value_free_data[4] = value_free_function_data;
-
-	return key_value_free_data;
+	return free_data;
 }
 
 LucuHeap lucu_heap_new(const size_t key_bytewidth, const size_t value_bytewidth, void (*key_free_function)(void*, void*), void* key_free_function_data, void (*value_free_function)(void*, void*), void* value_free_function_data, bool (*compare_function)(void*, void*, void*), void* compare_function_data) {
 	assert(compare_function != NULL);
 
-	void** key_value_free_data = lucu_heap_create_key_value_free_data(
+	LucuHeapFreeData* free_data = lucu_heap_create_free_data(
 		key_bytewidth, key_free_function, key_free_function_data,
 		value_free_function, value_free_function_data
 	);
@@ -55,13 +43,13 @@ LucuHeap lucu_heap_new(const size_t key_bytewidth, const size_t value_bytewidth,
 	LucuHeap heap = {
 		.h = lucu_vector_new(
 			key_bytewidth + value_bytewidth,
-			lucu_heap_free_key_value, key_value_free_data
+			lucu_heap_free_key_value, free_data
 		),
 		.key_bytewidth = key_bytewidth,
 		.value_bytewidth = value_bytewidth,
 		.compare_function = compare_function,
 		.compare_function_data = compare_function_data,
-		.key_value_free_data = key_value_free_data,
+		.free_data = free_data,
 	};
 
 	return heap;
@@ -70,7 +58,7 @@ LucuHeap lucu_heap_new(const size_t key_bytewidth, const size_t value_bytewidth,
 LucuHeap lucu_heap_new_with_size(const int length, const size_t key_bytewidth, const size_t value_bytewidth, void (*key_free_function)(void*, void*), void* key_free_function_data, void (*value_free_function)(void*, void*), void* value_free_function_data, bool (*compare_function)(void*, void*, void*), void* compare_function_data) {
 	assert(compare_function != NULL);
 
-	void** key_value_free_data = lucu_heap_create_key_value_free_data(
+	LucuHeapFreeData* free_data = lucu_heap_create_free_data(
 		key_bytewidth, key_free_function, key_free_function_data,
 		value_free_function, value_free_function_data
 	);
@@ -78,13 +66,13 @@ LucuHeap lucu_heap_new_with_size(const int length, const size_t key_bytewidth, c
 	LucuHeap heap = {
 		.h = lucu_vector_new_with_size(
 			length, key_bytewidth + value_bytewidth,
-			lucu_heap_free_key_value, key_value_free_data
+			lucu_heap_free_key_value, free_data
 		),
 		.key_bytewidth = key_bytewidth,
 		.value_bytewidth = value_bytewidth,
 		.compare_function = compare_function,
 		.compare_function_data = compare_function_data,
-		.key_value_free_data = key_value_free_data,
+		.free_data = free_data,
 	};
 
 	return heap;
@@ -92,10 +80,7 @@ LucuHeap lucu_heap_new_with_size(const int length, const size_t key_bytewidth, c
 
 void lucu_heap_destroy(LucuHeap* heap) {
 	lucu_vector_destroy(&heap->h);
-	free(heap->key_value_free_data[0]);
-	free(heap->key_value_free_data[1]);
-	free(heap->key_value_free_data[3]);
-	free(heap->key_value_free_data);
+	free(heap->free_data);
 }
 
 static inline int lucu_heap_left_index(const int index) {
