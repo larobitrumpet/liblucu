@@ -6,7 +6,7 @@
 #include <string.h>
 #include <assert.h>
 
-static void lucu_heap_free_key_value(void* key_value, void* data) {
+static void lucu_heap_free_key_value(void* const key_value, void* const data) {
 	LucuHeapFreeData* d = (LucuHeapFreeData*)data;
 
 	if (d->key_free_function != NULL) {
@@ -18,10 +18,10 @@ static void lucu_heap_free_key_value(void* key_value, void* data) {
 	}
 }
 
-static LucuHeapFreeData* lucu_heap_create_free_data(const size_t key_bytewidth, void (*key_free_function)(void*, void*), void* key_free_function_data, void (*value_free_function)(void*, void*), void* value_free_function_data) {
-	LucuHeapFreeData* free_data = malloc(sizeof(LucuHeapFreeData));
+static LucuHeapFreeData* lucu_heap_create_free_data(const size_t key_bytewidth, void (* const key_free_function)(void*, void*), void* const key_free_function_data, void (* const value_free_function)(void*, void*), void* const value_free_function_data) {
+	LucuHeapFreeData* const free_data = malloc(sizeof(LucuHeapFreeData));
 
-	*free_data = (LucuHeapFreeData){
+	const LucuHeapFreeData fd = {
 		.key_bytewidth = key_bytewidth,
 		.key_free_function = key_free_function,
 		.key_free_function_data = key_free_function_data,
@@ -29,18 +29,20 @@ static LucuHeapFreeData* lucu_heap_create_free_data(const size_t key_bytewidth, 
 		.value_free_function_data = value_free_function_data,
 	};
 
+	memcpy(free_data, &fd, sizeof(LucuHeapFreeData));
+
 	return free_data;
 }
 
-LucuHeap lucu_heap_new(const size_t key_bytewidth, const size_t value_bytewidth, void (*key_free_function)(void*, void*), void* key_free_function_data, void (*value_free_function)(void*, void*), void* value_free_function_data, bool (*compare_function)(void*, void*, void*), void* compare_function_data) {
+LucuHeap lucu_heap_new(const size_t key_bytewidth, const size_t value_bytewidth, void (* const key_free_function)(void*, void*), void* const key_free_function_data, void (* const value_free_function)(void*, void*), void* const value_free_function_data, bool (* const compare_function)(void*, void*, void*), void* const compare_function_data) {
 	assert(compare_function != NULL);
 
-	LucuHeapFreeData* free_data = lucu_heap_create_free_data(
+	LucuHeapFreeData* const free_data = lucu_heap_create_free_data(
 		key_bytewidth, key_free_function, key_free_function_data,
 		value_free_function, value_free_function_data
 	);
 
-	LucuHeap heap = {
+	const LucuHeap heap = {
 		.h = lucu_vector_new(
 			key_bytewidth + value_bytewidth,
 			lucu_heap_free_key_value, free_data
@@ -55,15 +57,15 @@ LucuHeap lucu_heap_new(const size_t key_bytewidth, const size_t value_bytewidth,
 	return heap;
 }
 
-LucuHeap lucu_heap_new_with_size(const int length, const size_t key_bytewidth, const size_t value_bytewidth, void (*key_free_function)(void*, void*), void* key_free_function_data, void (*value_free_function)(void*, void*), void* value_free_function_data, bool (*compare_function)(void*, void*, void*), void* compare_function_data) {
+LucuHeap lucu_heap_new_with_size(const int length, const size_t key_bytewidth, const size_t value_bytewidth, void (* const key_free_function)(void*, void*), void* const key_free_function_data, void (* const value_free_function)(void*, void*), void* const value_free_function_data, bool (* const compare_function)(void*, void*, void*), void* const compare_function_data) {
 	assert(compare_function != NULL);
 
-	LucuHeapFreeData* free_data = lucu_heap_create_free_data(
+	LucuHeapFreeData* const free_data = lucu_heap_create_free_data(
 		key_bytewidth, key_free_function, key_free_function_data,
 		value_free_function, value_free_function_data
 	);
 
-	LucuHeap heap = {
+	const LucuHeap heap = {
 		.h = lucu_vector_new_with_size(
 			length, key_bytewidth + value_bytewidth,
 			lucu_heap_free_key_value, free_data
@@ -95,24 +97,24 @@ static inline int lucu_heap_parent_index(const int index) {
 	return (index - 1) / 2;
 }
 
-void* lucu_heap_get_key(const LucuHeap* heap, const int index) {
+void* lucu_heap_get_key(const LucuHeap* const heap, const int index) {
 	return lucu_vector_get(&heap->h, index);
 }
 
-void* lucu_heap_get_value(const LucuHeap* heap, const int index) {
+void* lucu_heap_get_value(const LucuHeap* const heap, const int index) {
 	return (void*)((uintptr_t)lucu_vector_get(&heap->h, index) + heap->key_bytewidth);
 }
 
-int lucu_heap_length(const LucuHeap* heap) {
+int lucu_heap_length(const LucuHeap* const heap) {
 	return lucu_vector_length(&heap->h);
 }
 
-static void lucu_heap_bubble_up(LucuHeap* heap, int index) {
+static void lucu_heap_bubble_up(LucuHeap* const heap, const int index) {
 	if (index == 0) {
 		return;
 	}
 
-	int parent = lucu_heap_parent_index(index);
+	const int parent = lucu_heap_parent_index(index);
 	if (!heap->compare_function(
 		lucu_heap_get_key(heap, parent),
 		lucu_heap_get_key(heap, index),
@@ -124,9 +126,9 @@ static void lucu_heap_bubble_up(LucuHeap* heap, int index) {
 	}
 }
 
-static void lucu_heap_bubble_down(LucuHeap* heap, int index) {
-	int left = lucu_heap_left_index(index);
-	int right = lucu_heap_right_index(index);
+static void lucu_heap_bubble_down(LucuHeap* const heap, const int index) {
+	const int left = lucu_heap_left_index(index);
+	const int right = lucu_heap_right_index(index);
 
 	if (left >= lucu_heap_length(heap)) {
 		return;
@@ -177,8 +179,8 @@ static void lucu_heap_bubble_down(LucuHeap* heap, int index) {
 	}
 }
 
-static void* lucu_heap_pair_key_value(size_t key_bytewidth, size_t value_bytewidth, void* key, void* value) {
-	void* key_value = malloc(key_bytewidth + value_bytewidth);
+static void* lucu_heap_pair_key_value(const size_t key_bytewidth, const size_t value_bytewidth, const void* const key, const void* const value) {
+	void* const key_value = malloc(key_bytewidth + value_bytewidth);
 
 	memcpy(key_value, key, key_bytewidth);
 	memcpy((void*)((uintptr_t)key_value + key_bytewidth), value, value_bytewidth);
@@ -186,20 +188,20 @@ static void* lucu_heap_pair_key_value(size_t key_bytewidth, size_t value_bytewid
 	return key_value;
 }
 
-void lucu_heap_push(LucuHeap* heap, void* key, void* value) {
+void lucu_heap_push(LucuHeap* const heap, const void* const key, const void* const value) {
 	if (heap->value_bytewidth == 0) {
 		lucu_vector_push(&heap->h, key);
 		lucu_heap_bubble_up(heap, lucu_heap_length(heap) - 1);
 		return;
 	}
 
-	void* key_value = lucu_heap_pair_key_value(heap->key_bytewidth, heap->value_bytewidth, key, value);
+	void* const key_value = lucu_heap_pair_key_value(heap->key_bytewidth, heap->value_bytewidth, key, value);
 	lucu_vector_push(&heap->h, key_value);
 	free(key_value);
 	lucu_heap_bubble_up(heap, lucu_heap_length(heap) - 1);
 }
 
-void lucu_heap_pop(LucuHeap* heap, void** key, void** value) {
+void lucu_heap_pop(LucuHeap* const heap, void** const key, void** const value) {
 	if (lucu_heap_length(heap) == 0) {
 		return;
 	}
@@ -225,7 +227,7 @@ void lucu_heap_pop(LucuHeap* heap, void** key, void** value) {
 	lucu_heap_bubble_down(heap, 0);
 }
 
-void lucu_heap_replace(LucuHeap* heap, void* key, void* value) {
+void lucu_heap_replace(LucuHeap* const heap, const void* const key, const void* const value) {
 	if (lucu_heap_length(heap) == 0) {
 		lucu_heap_push(heap, key, value);
 	}
@@ -238,7 +240,7 @@ void lucu_heap_replace(LucuHeap* heap, void* key, void* value) {
 		return;
 	}
 
-	void* key_value = lucu_heap_pair_key_value(heap->key_bytewidth, heap->value_bytewidth, key, value);
+	void* const key_value = lucu_heap_pair_key_value(heap->key_bytewidth, heap->value_bytewidth, key, value);
 
 	memcpy(lucu_vector_get(&heap->h, 0), key_value, heap->key_bytewidth + heap->value_bytewidth);
 
@@ -246,27 +248,27 @@ void lucu_heap_replace(LucuHeap* heap, void* key, void* value) {
 	free(key_value);
 }
 
-void lucu_heap_update(LucuHeap* heap, int index) {
+void lucu_heap_update(LucuHeap* const heap, const int index) {
 	lucu_heap_bubble_up(heap, index);
 	lucu_heap_bubble_down(heap, index);
 }
 
-static bool lucu_heap_index_func(const void* data1, const void* data2, void* params) {
+static bool lucu_heap_index_func(const void* const data1, const void* const data2, void* const params) {
 	void** pars = (void**)params;
 
-	bool (*equal)(const void*, const void*, const void*, const void*, void*) = (bool (*)(const void*, const void*, const void*, const void*, void*))((LucuGenericFunction*)pars[0])->f;
-	size_t* key_bytewidth = (size_t*)pars[1];
+	bool (* const equal)(const void*, const void*, const void*, const void*, void*) = (bool (*)(const void*, const void*, const void*, const void*, void*))((LucuGenericFunction*)pars[0])->f;
+	const size_t key_bytewidth = *(size_t*)pars[1];
 	void* par = pars[2];
 
 	const void* key1 = data1;
-	const void* value1 = (void*)((uintptr_t)data1 + *key_bytewidth);
+	const void* value1 = (void*)((uintptr_t)data1 + key_bytewidth);
 	const void* key2 = data2;
-	const void* value2 = (void*)((uintptr_t)data2 + *key_bytewidth);
+	const void* value2 = (void*)((uintptr_t)data2 + key_bytewidth);
 
 	return equal(key1, value1, key2, value2, par);
 }
 
-int lucu_heap_index(const LucuHeap* heap, const void* key, const void* value, bool (*equal)(const void*, const void*, const void*, const void*, void*), void* params) {
+int lucu_heap_index(const LucuHeap* const heap, const void* const key, const void* const value, bool (* const equal)(const void*, const void*, const void*, const void*, void*), void* const params) {
 	void* key_value;
 
 	#pragma GCC diagnostic push

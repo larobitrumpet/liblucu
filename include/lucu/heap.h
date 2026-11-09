@@ -7,11 +7,11 @@
 #include <lucu/vector.h>
 
 typedef struct LucuHeapFreeData {
-	size_t key_bytewidth;
-	void (*key_free_function)(void*, void*);
-	void* key_free_function_data;
-	void (*value_free_function)(void*, void*);
-	void* value_free_function_data;
+	const size_t key_bytewidth;
+	void (* const key_free_function)(void*, void*);
+	void* const key_free_function_data;
+	void (* const value_free_function)(void*, void*);
+	void* const value_free_function_data;
 } LucuHeapFreeData;
 
 /**
@@ -31,11 +31,11 @@ typedef struct LucuHeap {
 	/// Takes two keys and is passed `compare_function_data`.
 	/// Returns `true` if the first key is greater than or equal to the second key,
 	/// returns `false` otherwise. Reverse this in order to get a min heap.
-	bool (*compare_function)(void*, void*, void*);
+	bool (* const compare_function)(void*, void*, void*);
 	/// Is passed as the third argument to `compare_function`.
-	void* compare_function_data;
+	void* const compare_function_data;
 	/// All the information that is required to free all the data that `LucuHeap` has allocated.
-	LucuHeapFreeData* free_data;
+	LucuHeapFreeData* const free_data;
 } LucuHeap;
 
 /**
@@ -123,7 +123,7 @@ int lucu_heap_length(const LucuHeap* heap);
 * @param key Key to push
 * @param value Value to store with the key (can be NULL if you aren't storing values (if `value_bytewidth` is 0)).
 */
-void lucu_heap_push(LucuHeap* heap, void* key, void* value);
+void lucu_heap_push(LucuHeap* heap, const void* key, const void* value);
 
 /**
 * Pops a key-value from the top of the heap.
@@ -150,7 +150,7 @@ void lucu_heap_pop(LucuHeap* heap, void** key, void** value);
 * @param key Key to push
 * @param value Value to store with the key (can be NULL if you aren't storing values (if `value_bytewidth` is 0)).
 */
-void lucu_heap_replace(LucuHeap* heap, void* key, void* value);
+void lucu_heap_replace(LucuHeap* heap, const void* key, const void* value);
 
 /**
 * Updates the element at index.

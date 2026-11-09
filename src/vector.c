@@ -13,18 +13,18 @@
 static void lucu_vector_grow_amortized(LucuVector* vector, int additional);
 static void lucu_vector_grow_exact(LucuVector* vector, int additional);
 
-LucuVector lucu_vector_new(const size_t bytewidth, void (* const free_function)(void*, void*), void* free_function_data) {
+LucuVector lucu_vector_new(const size_t bytewidth, void (* const free_function)(void*, void*), void* const free_function_data) {
 	return lucu_vector_new_with_size(0, bytewidth, free_function, free_function_data);
 }
 
-LucuVector lucu_vector_new_with_size(const int size, const size_t bytewidth, void (* const free_function)(void*, void*), void* free_function_data) {
+LucuVector lucu_vector_new_with_size(const int size, const size_t bytewidth, void (* const free_function)(void*, void*), void* const free_function_data) {
 	// The way minimum size is calculation is taken from Rust's `Vec`s (see RawVecInner::min_non_zero_cap)
 	// https://github.com/rust-lang/rust/blob/3b5aab2cea0711a2cc87a5a71338b5dba241b6a9/library/alloc/src/raw_vec/mod.rs#L163-L176
 	const int min_size = bytewidth == 1 ? 8 : (bytewidth <= 1024 ? 4 : 1);
 
 	const int s = size > min_size ? size : min_size;
 
-	LucuVector vector = {
+	const LucuVector vector = {
 		.bytewidth = bytewidth,
 		.size = s,
 		.v = malloc(bytewidth * (size_t)s),
@@ -37,15 +37,15 @@ LucuVector lucu_vector_new_with_size(const int size, const size_t bytewidth, voi
 	return vector;
 }
 
-static bool lucu_vector_destroy_func(void* const data, void* params) {
+static bool lucu_vector_destroy_func(void* const data, void* const params) {
 	void** pars = (void**)params;
-	void (*free_function)(void*, void*) = (void (*)(void*, void*))((LucuGenericFunction*)pars[0])->f;
+	void (* const free_function)(void*, void*) = (void (*)(void*, void*))((LucuGenericFunction*)pars[0])->f;
 	void* free_function_data = pars[1];
 	free_function(data, free_function_data);
 	return false;
 }
 
-void lucu_vector_destroy(LucuVector* vector) {
+void lucu_vector_destroy(LucuVector* const vector) {
 	if (vector->free_function != NULL) {
 		LucuGenericFunction ff = { (void (*)(void))vector->free_function };
 		void* params[] = {(void*)&ff, vector->free_function_data};
@@ -54,17 +54,17 @@ void lucu_vector_destroy(LucuVector* vector) {
 	free(vector->v);
 }
 
-void lucu_free_function_free(void* ptr, void* _data) {
+void lucu_free_function_free(void* const ptr, void* const _data) {
 	(void)_data;
 	free(ptr);
 }
 
-void lucu_vector_destroy_free_function(void* vector, void* _data) {
+void lucu_vector_destroy_free_function(void* const vector, void* const _data) {
 	(void)_data;
 	lucu_vector_destroy(vector);
 }
 
-LucuVector lucu_vector_from_array(const void* const arr, const int length, const size_t bytewidth, void (* const free_function)(void*, void*), void* free_function_data) {
+LucuVector lucu_vector_from_array(const void* const arr, const int length, const size_t bytewidth, void (* const free_function)(void*, void*), void* const free_function_data) {
 	assert(length > 0);
 	LucuVector vector = lucu_vector_new_with_size(length, bytewidth, free_function, free_function_data);
 	memcpy(vector.v, arr, (size_t)length * bytewidth);
@@ -72,11 +72,11 @@ LucuVector lucu_vector_from_array(const void* const arr, const int length, const
 	return vector;
 }
 
-void* lucu_vector_get_data(const LucuVector* vector) {
+void* lucu_vector_get_data(const LucuVector* const vector) {
 	return vector->v;
 }
 
-static bool lucu_vector_print_func(const void* const data, void* params) {
+static bool lucu_vector_print_func(const void* const data, void* const params) {
 	void** pars = (void**)params;
 	void (*print_function)(const void*, void*) = (void (*)(const void*, void*))((LucuGenericFunction*)pars[0])->f;
 	void* par = pars[1];
@@ -85,7 +85,7 @@ static bool lucu_vector_print_func(const void* const data, void* params) {
 	return false;
 }
 
-void lucu_vector_print(const LucuVector* vector, void (* const print_function)(void*, void*), void* params) {
+void lucu_vector_print(const LucuVector* vector, void (* const print_function)(void*, void*), void* const params) {
 	printf("[");
 
 	LucuGenericFunction pf = { (void (*)(void))print_function };
@@ -95,15 +95,15 @@ void lucu_vector_print(const LucuVector* vector, void (* const print_function)(v
 	printf("]");
 }
 
-bool lucu_vector_is_empty(const LucuVector* vector) {
+bool lucu_vector_is_empty(const LucuVector* const vector) {
 	return vector->length == 0;
 }
 
-int lucu_vector_length(const LucuVector* vector) {
+int lucu_vector_length(const LucuVector* const vector) {
 	return vector->length;
 }
 
-static void lucu_vector_grow_amortized(LucuVector* vector, const int additional) {
+static void lucu_vector_grow_amortized(LucuVector* const vector, const int additional) {
 	const int required_size = vector->length + additional;
 
 	if (vector->size >= required_size) {
@@ -118,7 +118,7 @@ static void lucu_vector_grow_amortized(LucuVector* vector, const int additional)
 	vector->v = realloc(vector->v, vector->bytewidth * (size_t)vector->size);
 }
 
-static void lucu_vector_grow_exact(LucuVector* vector, const int additional) {
+static void lucu_vector_grow_exact(LucuVector* const vector, const int additional) {
 	const int required_size = vector->length + additional;
 
 	if (vector->size >= required_size) {
@@ -129,21 +129,21 @@ static void lucu_vector_grow_exact(LucuVector* vector, const int additional) {
 	vector->v = realloc(vector->v, vector->bytewidth * (size_t)vector->size);
 }
 
-void lucu_vector_push_back(LucuVector* vector, const void* const data) {
+void lucu_vector_push_back(LucuVector* const vector, const void* const data) {
 	lucu_vector_grow_amortized(vector, 1);
 	memcpy(lucu_vector_get(vector, vector->length), data, vector->bytewidth);
 	vector->length++;
 }
 
-void lucu_vector_push(LucuVector* vector, const void* const data) {
+void lucu_vector_push(LucuVector* const vector, const void* const data) {
 	lucu_vector_push_back(vector, data);
 }
 
-void lucu_vector_enqueue(LucuVector* vector, const void* const data) {
+void lucu_vector_enqueue(LucuVector* const vector, const void* const data) {
 	lucu_vector_push_back(vector, data);
 }
 
-void lucu_vector_push_front(LucuVector* vector, const void* const data) {
+void lucu_vector_push_front(LucuVector* const vector, const void* const data) {
 	lucu_vector_grow_amortized(vector, 1);
 	// TODO: Do benchmark testing to see if it is better to copy each
 	// element one at a time, or to just use memmove
@@ -154,7 +154,7 @@ void lucu_vector_push_front(LucuVector* vector, const void* const data) {
 	vector->length++;
 }
 
-void* lucu_vector_pop_front(LucuVector* vector, void* data) {
+void* lucu_vector_pop_front(LucuVector* const vector, void* data) {
 	if (vector->length == 0) {
 		return NULL;
 	}
@@ -176,11 +176,11 @@ void* lucu_vector_pop_front(LucuVector* vector, void* data) {
 	return data;
 }
 
-void* lucu_vector_dequeue(LucuVector* vector, void* data) {
+void* lucu_vector_dequeue(LucuVector* const vector, void* const data) {
 	return lucu_vector_pop_front(vector, data);
 }
 
-void* lucu_vector_pop_back(LucuVector* vector, void* data) {
+void* lucu_vector_pop_back(LucuVector* const vector, void* data) {
 	if (vector->length == 0) {
 		return NULL;
 	}
@@ -196,23 +196,23 @@ void* lucu_vector_pop_back(LucuVector* vector, void* data) {
 	return data;
 }
 
-void* lucu_vector_pop(LucuVector* vector, void* data) {
+void* lucu_vector_pop(LucuVector* const vector, void* const data) {
 	return lucu_vector_pop_back(vector, data);
 }
 
-void lucu_vector_swap(LucuVector* vector, const int index_1, const int index_2) {
-	void* tmp = malloc(vector->bytewidth);
+void lucu_vector_swap(LucuVector* const vector, const int index_1, const int index_2) {
+	void* const tmp = malloc(vector->bytewidth);
 	memcpy(tmp, lucu_vector_get(vector, index_1), vector->bytewidth);
 	memcpy(lucu_vector_get(vector, index_1), lucu_vector_get(vector, index_2), vector->bytewidth);
 	memcpy(lucu_vector_get(vector, index_2), tmp, vector->bytewidth);
 	free(tmp);
 }
 
-static bool lucu_vector_index_func(const void* const data, void* params) {
+static bool lucu_vector_index_func(const void* const data, void* const params) {
 	void** pars = (void**)params;
 	// And here you can see we put back the `const` qualifier that we dropped
 	const void* d = pars[0];
-	bool (*equal)(const void*, const void*, void*) = (bool (*)(const void*, const void*, void*))((LucuGenericFunction*)pars[1])->f;
+	bool (* const equal)(const void*, const void*, void*) = (bool (*)(const void*, const void*, void*))((LucuGenericFunction*)pars[1])->f;
 	int* index = pars[2];
 	void* par = pars[3];
 	if (equal(data, d, par)) {
@@ -222,7 +222,7 @@ static bool lucu_vector_index_func(const void* const data, void* params) {
 	return false;
 }
 
-int lucu_vector_index(const LucuVector* vector, const void* const data, bool (* const equal)(const void*, const void*, void*), void* const params) {
+int lucu_vector_index(const LucuVector* const vector, const void* const data, bool (* const equal)(const void*, const void*, void*), void* const params) {
 	int index = 0;
 	LucuGenericFunction eq = { (void (*)(void))equal };
 	#pragma GCC diagnostic push
@@ -242,11 +242,11 @@ int lucu_vector_index(const LucuVector* vector, const void* const data, bool (* 
 	}
 }
 
-void* lucu_vector_get(const LucuVector* vector, const int index) {
+void* lucu_vector_get(const LucuVector* const vector, const int index) {
 	return (void*)((uintptr_t)vector->v + (size_t)index * vector->bytewidth);
 }
 
-void lucu_vector_remove(LucuVector* vector, const int index) {
+void lucu_vector_remove(LucuVector* const vector, const int index) {
 	assert(index < lucu_vector_length(vector) && index >= 0);
 	if (vector->free_function != NULL) {
 		vector->free_function(lucu_vector_get(vector, index), vector->free_function_data);
@@ -261,7 +261,7 @@ void lucu_vector_remove(LucuVector* vector, const int index) {
 	}
 }
 
-void lucu_vector_swap_remove(LucuVector* vector, int index) {
+void lucu_vector_swap_remove(LucuVector* const vector, const int index) {
 	assert(index < lucu_vector_length(vector) && index >= 0);
 	if (vector->free_function != NULL) {
 		vector->free_function(lucu_vector_get(vector, index), vector->free_function_data);
@@ -274,7 +274,7 @@ void lucu_vector_swap_remove(LucuVector* vector, int index) {
 	}
 }
 
-void lucu_vector_insert(LucuVector* vector, const void* const data, const int index) {
+void lucu_vector_insert(LucuVector* const vector, const void* const data, const int index) {
 	assert(index >= 0);
 
 	if (index >= lucu_vector_length(vector)) {
@@ -295,7 +295,7 @@ void lucu_vector_insert(LucuVector* vector, const void* const data, const int in
 	vector->length++;
 }
 
-void lucu_vector_truncate(LucuVector* vector, int length) {
+void lucu_vector_truncate(LucuVector* const vector, const int length) {
 	if (vector->free_function != NULL) {
 		for (int i = length; i < vector->length; i++) {
 			vector->free_function(lucu_vector_get(vector, i), vector->free_function_data);
@@ -307,7 +307,7 @@ void lucu_vector_truncate(LucuVector* vector, int length) {
 	}
 }
 
-void lucu_vector_resize(LucuVector* vector, const int length, const void* data) {
+void lucu_vector_resize(LucuVector* const vector, const int length, const void* const data) {
 	if (length < vector->length) {
 		lucu_vector_truncate(vector, length);
 	}
@@ -323,7 +323,7 @@ void lucu_vector_resize(LucuVector* vector, const int length, const void* data) 
 	vector->length = length;
 }
 
-void lucu_vector_extend_array(LucuVector *vector, const void *arr, int length) {
+void lucu_vector_extend_array(LucuVector* const vector, const void* const arr, const int length) {
 	if (length == 0) {
 		return;
 	}
@@ -335,29 +335,29 @@ void lucu_vector_extend_array(LucuVector *vector, const void *arr, int length) {
 	vector->length = vector->length + length;
 }
 
-void lucu_vector_extend(LucuVector *vector, const LucuVector* ext) {
+void lucu_vector_extend(LucuVector* const vector, const LucuVector* const ext) {
 	assert(vector->bytewidth == ext->bytewidth);
 
 	lucu_vector_extend_array(vector, lucu_vector_get_data(ext), ext->length);
 }
 
-void lucu_vector_clear(LucuVector *vector) {
+void lucu_vector_clear(LucuVector* const vector) {
 	lucu_vector_truncate(vector, 0);
 }
 
-void lucu_vector_reserve(LucuVector* vector, const int additional) {
+void lucu_vector_reserve(LucuVector* const vector, const int additional) {
 	lucu_vector_grow_amortized(vector, additional);
 }
 
-void lucu_vector_reserve_exact(LucuVector* vector, int additional) {
+void lucu_vector_reserve_exact(LucuVector* const vector, const int additional) {
 	lucu_vector_grow_exact(vector, additional);
 }
 
-void lucu_vector_shrink_to_fit(LucuVector* vector) {
+void lucu_vector_shrink_to_fit(LucuVector* const vector) {
 	lucu_vector_shrink_to(vector, vector->length);
 }
 
-void lucu_vector_shrink_to(LucuVector* vector, int min_size) {
+void lucu_vector_shrink_to(LucuVector* const vector, const int min_size) {
 	if (vector->size <= min_size) {
 		return;
 	}
@@ -367,14 +367,14 @@ void lucu_vector_shrink_to(LucuVector* vector, int min_size) {
 	vector->v = realloc(vector->v, vector->bytewidth * (size_t)vector->size);
 }
 
-void lucu_vector_iterate(const LucuVector* vector, bool (* const func)(const void*, void*), void* const params) {
+void lucu_vector_iterate(const LucuVector* const vector, bool (* const func)(const void*, void*), void* const params) {
 	for (int i = 0; i < vector->length; i++) {
 		if (func(lucu_vector_get(vector, i), params))
 			break;
 	}
 }
 
-void lucu_vector_mut_iterate(LucuVector* vector, bool (* const func)(void*, void*), void* const params) {
+void lucu_vector_mut_iterate(LucuVector* const vector, bool (* const func)(void*, void*), void* const params) {
 	for (int i = 0; i < vector->length; i++) {
 		if (func(lucu_vector_get(vector, i), params))
 			break;
@@ -383,16 +383,16 @@ void lucu_vector_mut_iterate(LucuVector* vector, bool (* const func)(void*, void
 
 static bool lucu_vector_filter_func(const void* const data, void* const params) {
 	void** pars = (void**)params;
-	LucuVector* vector = (LucuVector*)pars[0];
-	bool (*filter_func)(const void*, void*) = (bool (*)(const void*, void*))((LucuGenericFunction*)pars[1])->f;
-	void* par = pars[2];
+	LucuVector* const vector = (LucuVector*)pars[0];
+	bool (* const filter_func)(const void*, void*) = (bool (*)(const void*, void*))((LucuGenericFunction*)pars[1])->f;
+	void* const par = pars[2];
 	if (filter_func(data, par)) {
 		lucu_vector_push_back(vector, data);
 	}
 	return false;
 }
 
-LucuVector lucu_vector_filter(const LucuVector* vector, bool (* const filter_func)(const void*, void*), void* const params) {
+LucuVector lucu_vector_filter(const LucuVector* const vector, bool (* const filter_func)(const void*, void*), void* const params) {
 	LucuVector new_vector = lucu_vector_new(vector->bytewidth, vector->free_function, vector->free_function_data);
 	LucuGenericFunction ff = { (void (*)(void))filter_func };
 	void* pars[] = {(void*)&new_vector, (void*)&ff, params};
@@ -403,10 +403,10 @@ LucuVector lucu_vector_filter(const LucuVector* vector, bool (* const filter_fun
 static bool lucu_vector_map_func(const void* const data, void* const params) {
 
 	void** pars = (void**)params;
-	LucuVector* vector = (LucuVector*)pars[0];
-	void* (*map_func)(const void*, void*) = (void* (*)(const void*, void*))((LucuGenericFunction*)pars[1])->f;
+	LucuVector* const vector = (LucuVector*)pars[0];
+	void* (* const map_func)(const void*, void*) = (void* (*)(const void*, void*))((LucuGenericFunction*)pars[1])->f;
 	void* map_data = pars[2];
-	void (*map_func_return_free)(void*, void*) = (void (*)(void*, void*))((LucuGenericFunction*)pars[3])->f;
+	 void (* const map_func_return_free)(void*, void*) = (void (*)(void*, void*))((LucuGenericFunction*)pars[3])->f;
 	void* map_func_return_free_data = pars[4];
 	void* mapped = map_func(data, map_data);
 	lucu_vector_push_back(vector, mapped);
@@ -416,7 +416,7 @@ static bool lucu_vector_map_func(const void* const data, void* const params) {
 	return false;
 }
 
-LucuVector lucu_vector_map(const LucuVector* vector, const size_t target_bytewidth, void (* const target_free_function)(void*, void*), void* const target_free_function_data, void* (* const map_function)(const void*, void*), void* const map_function_data, void (* const map_func_return_free)(void*, void*), void* const map_func_return_free_data) {
+LucuVector lucu_vector_map(const LucuVector* const vector, const size_t target_bytewidth, void (* const target_free_function)(void*, void*), void* const target_free_function_data, void* (* const map_function)(const void*, void*), void* const map_function_data, void (* const map_func_return_free)(void*, void*), void* const map_func_return_free_data) {
 	LucuVector new_vector = lucu_vector_new(target_bytewidth, target_free_function, target_free_function_data);
 	LucuGenericFunction mf = { (void (*)(void))map_function };
 	LucuGenericFunction rf = { (void (*)(void))map_func_return_free };
@@ -425,9 +425,9 @@ LucuVector lucu_vector_map(const LucuVector* vector, const size_t target_bytewid
 	return new_vector;
 }
 
-static bool lucu_vector_superlative_func(const void* data, void* params) {
+static bool lucu_vector_superlative_func(const void* const data, void* const params) {
 	void** pars = (void**)params;
-	bool (*compare_func)(const void*, const void*, void*) = (bool (*)(const void*, const void*, void*))((LucuGenericFunction*)pars[0])->f;
+	bool (* const compare_func)(const void*, const void*, void*) = (bool (*)(const void*, const void*, void*))((LucuGenericFunction*)pars[0])->f;
 	const void** const superlative = (const void** const)pars[1];
 	void* par = pars[2];
 	if (compare_func(data, *superlative, par))
@@ -435,7 +435,7 @@ static bool lucu_vector_superlative_func(const void* data, void* params) {
 	return false;
 }
 
-void* lucu_vector_superlative(const LucuVector* vector, bool (* const compare_func)(const void*, const void*, void*), void* const params) {
+void* lucu_vector_superlative(const LucuVector* const vector, bool (* const compare_func)(const void*, const void*, void*), void* const params) {
 	void* superlative = vector->v;
 	LucuGenericFunction cf = { (void (*)(void))compare_func };
 	void* pars[] = {(void*)&cf, (void*)&superlative, params};
@@ -443,7 +443,7 @@ void* lucu_vector_superlative(const LucuVector* vector, bool (* const compare_fu
 	return superlative;
 }
 
-static void merge(LucuVector* vector, const int start, const int middle, const int end, bool (*compare_function)(const void*, const void*, void*), void* params) {
+static void merge(LucuVector* const vector, const int start, const int middle, const int end, bool (* const compare_function)(const void*, const void*, void*), void* const params) {
 	LucuVector merged = lucu_vector_new(vector->bytewidth, vector->free_function, vector->free_function_data);
 
 	int i = start;
@@ -474,7 +474,7 @@ static void merge(LucuVector* vector, const int start, const int middle, const i
 	lucu_vector_destroy(&merged);
 }
 
-static void merge_sort(LucuVector* vector, const int start, const int end, bool (*compare_function)(const void*, const void*, void*), void* params) {
+static void merge_sort(LucuVector* const vector, const int start, const int end, bool (* const compare_function)(const void*, const void*, void*), void* const params) {
 	if (start == end) {
 		return;
 	} else if (end - start == 1) {
@@ -494,11 +494,11 @@ static void merge_sort(LucuVector* vector, const int start, const int end, bool 
 	merge(vector, start, middle, end, compare_function, params);
 }
 
-void lucu_vector_sort(LucuVector* vector, bool (*compare_function)(const void*, const void*, void*), void* params) {
+void lucu_vector_sort(LucuVector* const vector, bool (* const compare_function)(const void*, const void*, void*), void* const params) {
 	merge_sort(vector, 0, lucu_vector_length(vector), compare_function, params);
 }
 
-LucuVector lucu_vector_flatten(const LucuVector* vector) {
+LucuVector lucu_vector_flatten(const LucuVector* const vector) {
 	int new_length = 0;
 
 	for (int i = 0; i < vector->length; i++) {

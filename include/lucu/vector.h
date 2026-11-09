@@ -21,9 +21,9 @@ typedef struct LucuVector {
 	int length;
 	/// Function used to free elements of the `LucuVector`.
 	/// See `lucu_vector_new` for more information
-	void (*free_function)(void*, void*);
+	void (*const free_function)(void*, void*);
 	/// Data to be passed as the second argument to `free_function`
-	void* free_function_data;
+	void* const free_function_data;
 	/// The minimum size that the vector should take up
 	const int min_size;
 } LucuVector;

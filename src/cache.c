@@ -8,7 +8,7 @@
 #include <string.h>
 #include <strings.h>
 
-static void lucu_cache_free_value(void* value, void* data) {
+static void lucu_cache_free_value(void* const value, void* const data) {
 	LucuHeapFreeData* d = (LucuHeapFreeData*)data;
 
 	if (d->key_free_function != NULL) {
@@ -20,10 +20,10 @@ static void lucu_cache_free_value(void* value, void* data) {
 	}
 }
 
-static LucuCacheFreeData* lucu_cache_create_free_data(const size_t key_bytewidth, void (*key_free_function)(void*, void*), void* key_free_function_data, void (*value_free_function)(void*, void*), void* value_free_function_data) {
-	LucuCacheFreeData* free_data = malloc(sizeof(LucuCacheFreeData));
+static LucuCacheFreeData* lucu_cache_create_free_data(const size_t key_bytewidth, void (* const key_free_function)(void*, void*), void* const key_free_function_data, void (* const value_free_function)(void*, void*), void* const value_free_function_data) {
+	LucuCacheFreeData* const free_data = malloc(sizeof(LucuCacheFreeData));
 
-	*free_data = (LucuCacheFreeData){
+	const LucuCacheFreeData fd = {
 		.key_bytewidth = key_bytewidth,
 		.key_free_function = key_free_function,
 		.key_free_function_data = key_free_function_data,
@@ -31,21 +31,23 @@ static LucuCacheFreeData* lucu_cache_create_free_data(const size_t key_bytewidth
 		.value_free_function_data = value_free_function_data,
 	};
 
+	memcpy(free_data, &fd, sizeof(LucuCacheFreeData));
+
 	return free_data;
 }
 
-bool lucu_cache_compare_function(void* a, void* b, void* _) {
+bool lucu_cache_compare_function(void* const a, void* const b, void* _) {
 	return *(int*) a <= *(int*)b;
 }
 
-LucuCache lucu_cache_new(const int cache_size, const size_t key_bytewidth, const size_t value_bytewidth, void (*key_free_function)(void*, void*), void* key_free_function_data, void (*value_free_function)(void*, void*), void* value_free_function_data, bool (*compare_function)(const void*, const void*, void*), void* compare_function_data, void* (*generate_function)(const void*, void*), void* generate_function_data) {
+LucuCache lucu_cache_new(const int cache_size, const size_t key_bytewidth, const size_t value_bytewidth, void (* const key_free_function)(void*, void*), void* const key_free_function_data, void (* const value_free_function)(void*, void*), void* const value_free_function_data, bool (* const compare_function)(const void*, const void*, void*), void* const compare_function_data, void* (* const generate_function)(const void*, void*), void* const generate_function_data) {
 
 	LucuCacheFreeData* free_data = lucu_cache_create_free_data(
 		key_bytewidth, key_free_function, key_free_function_data,
 		value_free_function, value_free_function_data
 	);
 	
-	LucuCache cache = {
+	const LucuCache cache = {
 		.c = lucu_heap_new_with_size(cache_size, sizeof(int), key_bytewidth + value_bytewidth, NULL, NULL, lucu_cache_free_value, free_data, lucu_cache_compare_function, NULL),
 		.size = cache_size,
 		.key_bytewidth = key_bytewidth,
@@ -60,12 +62,12 @@ LucuCache lucu_cache_new(const int cache_size, const size_t key_bytewidth, const
 	return cache;
 }
 
-void lucu_cache_destroy(LucuCache* cache) {
+void lucu_cache_destroy(LucuCache* const cache) {
 	lucu_heap_destroy(&cache->c);
 	free(cache->free_data);
 }
 
-void* lucu_cache_get(LucuCache* cache, void* key, void* value) {
+void* lucu_cache_get(LucuCache* const cache, const void* const key, void* value) {
 	int index;
 
 	// Because our data is in a binary min heap stored in an array based on the number of accesses,
@@ -90,12 +92,12 @@ void* lucu_cache_get(LucuCache* cache, void* key, void* value) {
 	}
 
 	if (index == -1) {
-		void* generated_value = cache->generate_function(key, cache->generate_function_data);
-		void* key_value = malloc(sizeof(cache->key_bytewidth + cache->value_bytewidth));
+		const void* const generated_value = cache->generate_function(key, cache->generate_function_data);
+		void* const key_value = malloc(sizeof(cache->key_bytewidth + cache->value_bytewidth));
 		memcpy(key_value, key, cache->key_bytewidth);
 		memcpy((void*)((uintptr_t)key_value + cache->key_bytewidth), generated_value, cache->value_bytewidth);
 
-		int zero = 0;
+		const int zero = 0;
 
 		if (lucu_heap_length(&cache->c) < cache->size) {
 			// There is more space in the cache, just push

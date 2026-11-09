@@ -7,11 +7,11 @@
 #include <stdbool.h>
 
 typedef struct LucuCacheFreeData {
-	size_t key_bytewidth;
-	void (*key_free_function)(void*, void*);
-	void* key_free_function_data;
-	void (*value_free_function)(void*, void*);
-	void* value_free_function_data;
+	const size_t key_bytewidth;
+	void (* const key_free_function)(void*, void*);
+	void* const key_free_function_data;
+	void (* const value_free_function)(void*, void*);
+	void* const value_free_function_data;
 } LucuCacheFreeData;
 
 typedef struct LucuCache {
@@ -19,11 +19,11 @@ typedef struct LucuCache {
 	const int size;
 	const size_t key_bytewidth;
 	const size_t value_bytewidth;
-	LucuCacheFreeData* free_data;
-	bool (*compare_function)(const void*, const void*, void*);
-	void* compare_function_data;
-	void* (*generate_function)(const void*, void*);
-	void* generate_function_data;
+	LucuCacheFreeData* const free_data;
+	bool (* const compare_function)(const void*, const void*, void*);
+	void* const compare_function_data;
+	void* (*const generate_function)(const void*, void*);
+	void* const generate_function_data;
 } LucuCache;
 
 /**
@@ -76,6 +76,6 @@ void lucu_cache_destroy(LucuCache* cache);
  * @return Pointer to the value. The same as `value` if it was not `NULL`,
  * otherwise will point to the newly allocated memory that will have to be freed by the user.
  */
-void* lucu_cache_get(LucuCache* cache, void* key, void* value);
+void* lucu_cache_get(LucuCache* cache, const void* key, void* value);
 
 #endif
