@@ -2,10 +2,10 @@ cmake_minimum_required(VERSION 3.21...3.31)
 
 project(
 	liblucu
+	VERSION 2.0.0
 	DESCRIPTION "Lucy's Useful C Utils"
 	LANGUAGES C
 )
-set(PROJECT_VERSION 1.4.0-beta)
 
 list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 
